@@ -471,4 +471,3 @@ get_header();
 	</section>
 </main>
 <?php get_footer(); ?>
-
