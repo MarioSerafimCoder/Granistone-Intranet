@@ -6,13 +6,29 @@
  */
 
 $values = array(
-	array( '01', 'Excelência', 'Fazemos bem-feito, sempre.' ),
-	array( '02', 'Respeito', 'Cuidamos das pessoas e relações.' ),
-	array( '03', 'Segurança', 'A vida está em primeiro lugar.' ),
-	array( '04', 'União', 'Crescemos quando caminhamos juntos.' ),
-	array( '05', 'Fé', 'Nosso propósito orienta o caminho.' ),
-	array( '06', 'Compromisso', 'Honramos cada entrega e parceria.' ),
+	array( 'number' => '01', 'title' => 'Excelência', 'description' => 'Fazemos bem-feito, sempre.', 'icon' => '◇' ),
+	array( 'number' => '02', 'title' => 'Respeito', 'description' => 'Cuidamos das pessoas e relações.', 'icon' => '◇' ),
+	array( 'number' => '03', 'title' => 'Segurança', 'description' => 'A vida está em primeiro lugar.', 'icon' => '◇' ),
+	array( 'number' => '04', 'title' => 'União', 'description' => 'Crescemos quando caminhamos juntos.', 'icon' => '◇' ),
+	array( 'number' => '05', 'title' => 'Fé', 'description' => 'Nosso propósito orienta o caminho.', 'icon' => '◇' ),
+	array( 'number' => '06', 'title' => 'Compromisso', 'description' => 'Honramos cada entrega e parceria.', 'icon' => '◇' ),
 );
+
+$values_eyebrow = granistone_theme_text( 'values_eyebrow', 'NOSSO JEITO DE SER' );
+$values_title   = granistone_theme_text( 'values_title', 'Valores que nos movem' );
+$values_note    = granistone_theme_text( 'values_note', 'Princípios que orientam escolhas, relações e resultados.' );
+
+// O plugin Nossos Valores é a fonte principal; os dados acima são apenas fallback.
+if ( function_exists( 'nossos_valores_get_section_data' ) ) {
+	$values_section = nossos_valores_get_section_data();
+
+	if ( is_array( $values_section ) ) {
+		$values_eyebrow = isset( $values_section['eyebrow'] ) ? $values_section['eyebrow'] : $values_eyebrow;
+		$values_title   = isset( $values_section['title'] ) ? $values_section['title'] : $values_title;
+		$values_note    = isset( $values_section['intro'] ) ? $values_section['intro'] : $values_note;
+		$values         = isset( $values_section['items'] ) && is_array( $values_section['items'] ) ? $values_section['items'] : $values;
+	}
+}
 
 get_header();
 ?>
@@ -422,8 +438,12 @@ get_header();
 	</section>
 
 	<section class="section values-section">
-		<div class="section-heading"><div><p class="eyebrow"><?php echo esc_html( granistone_theme_text( 'values_eyebrow', 'NOSSO JEITO DE SER' ) ); ?></p><h2><?php echo esc_html( granistone_theme_text( 'values_title', 'Valores que nos movem' ) ); ?></h2></div><p class="heading-note"><?php echo esc_html( granistone_theme_text( 'values_note', 'Princípios que orientam escolhas, relações e resultados.' ) ); ?></p></div>
-		<div class="values-grid"><?php foreach ( $values as $value ) : ?><article><span><?php echo esc_html( $value[0] ); ?></span><div class="value-icon" aria-hidden="true">◇</div><h3><?php echo esc_html( $value[1] ); ?></h3><p><?php echo esc_html( $value[2] ); ?></p></article><?php endforeach; ?></div>
+		<div class="section-heading"><div><p class="eyebrow"><?php echo esc_html( $values_eyebrow ); ?></p><h2><?php echo esc_html( $values_title ); ?></h2></div><p class="heading-note"><?php echo esc_html( $values_note ); ?></p></div>
+		<div class="values-grid">
+			<?php foreach ( $values as $value ) : ?>
+				<article><span><?php echo esc_html( $value['number'] ); ?></span><div class="value-icon" aria-hidden="true"><?php echo esc_html( $value['icon'] ); ?></div><h3><?php echo esc_html( $value['title'] ); ?></h3><p><?php echo esc_html( $value['description'] ); ?></p></article>
+			<?php endforeach; ?>
+		</div>
 	</section>
 
 	<section class="recognition-section">
@@ -451,3 +471,4 @@ get_header();
 	</section>
 </main>
 <?php get_footer(); ?>
+
