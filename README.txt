@@ -47,4 +47,3 @@ as respectivas áreas e cadastra o conteúdo demonstrativo sem duplicações.
 
 Instale e ative granistone-reflexoes-v1.1.0.zip para administrar o popup em
 Salmos > Programação.
-
