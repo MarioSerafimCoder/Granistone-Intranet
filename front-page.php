@@ -48,45 +48,41 @@ get_header();
 		$bundled_stones = granistone_bundled_stones();
 		$bundled_map    = array();
 		$stones         = array();
-		$used_stones    = array();
 
 		foreach ( $bundled_stones as $bundled_stone ) {
 			$bundled_map[ sanitize_title( $bundled_stone['title'] ) ] = $bundled_stone;
 		}
 
-		$stones_query = new WP_Query(
-			array(
-				'post_type'      => 'granistone_stone',
-				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-				'orderby'        => array( 'menu_order' => 'ASC', 'date' => 'DESC' ),
-			)
-		);
-
-		while ( $stones_query->have_posts() ) {
-			$stones_query->the_post();
-			$stone_title   = get_the_title();
-			$stone_slug    = sanitize_title( $stone_title );
-			$stone_default = isset( $bundled_map[ $stone_slug ] ) ? $bundled_map[ $stone_slug ] : array();
-			$stone_image   = get_the_post_thumbnail_url( get_the_ID(), 'full' );
-			$stone_eyebrow = get_post_meta( get_the_ID(), '_granistone_stone_eyebrow', true );
-			$stone_tagline = get_post_meta( get_the_ID(), '_granistone_stone_tagline', true );
-
-			$stones[] = array(
-				'title'   => $stone_title,
-				'image'   => $stone_image ? $stone_image : ( isset( $stone_default['image'] ) ? $stone_default['image'] : '' ),
-				'eyebrow' => $stone_eyebrow ? $stone_eyebrow : 'ORIGEM & EXCELÊNCIA',
-				'tagline' => $stone_tagline ? $stone_tagline : ( get_the_excerpt() ? get_the_excerpt() : 'Natureza transformada em legado' ),
+		if ( post_type_exists( 'granistone_stone' ) ) {
+			$stones_query = new WP_Query(
+				array(
+					'post_type'      => 'granistone_stone',
+					'post_status'    => 'publish',
+					'posts_per_page' => -1,
+					'orderby'        => array( 'menu_order' => 'ASC', 'date' => 'DESC' ),
+				)
 			);
-			$used_stones[ $stone_slug ] = true;
-		}
-		wp_reset_postdata();
 
-		foreach ( $bundled_stones as $bundled_stone ) {
-			$stone_slug = sanitize_title( $bundled_stone['title'] );
-			if ( ! isset( $used_stones[ $stone_slug ] ) ) {
-				$stones[] = $bundled_stone;
+			while ( $stones_query->have_posts() ) {
+				$stones_query->the_post();
+				$stone_title   = get_the_title();
+				$stone_slug    = sanitize_title( $stone_title );
+				$stone_default = isset( $bundled_map[ $stone_slug ] ) ? $bundled_map[ $stone_slug ] : array();
+				$stone_image   = get_the_post_thumbnail_url( get_the_ID(), 'full' );
+				$stone_eyebrow = get_post_meta( get_the_ID(), '_granistone_stone_eyebrow', true );
+				$stone_tagline = get_post_meta( get_the_ID(), '_granistone_stone_tagline', true );
+
+				$stones[] = array(
+					'title'   => $stone_title,
+					'image'   => $stone_image ? $stone_image : ( isset( $stone_default['image'] ) ? $stone_default['image'] : '' ),
+					'eyebrow' => $stone_eyebrow ? $stone_eyebrow : 'ORIGEM & EXCELÊNCIA',
+					'tagline' => $stone_tagline ? $stone_tagline : ( get_the_excerpt() ? get_the_excerpt() : 'Natureza transformada em legado' ),
+				);
 			}
+			wp_reset_postdata();
+		} else {
+			// Exibe o catálogo empacotado somente quando o plugin de conteúdos não existe.
+			$stones = $bundled_stones;
 		}
 		?>
 		<div class="hero-stone stone-carousel" data-stone-carousel tabindex="0" aria-label="<?php esc_attr_e( 'Rochas Granistone', 'granistone-intranet' ); ?>">
