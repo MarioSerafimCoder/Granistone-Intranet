@@ -12,7 +12,7 @@
 	</div>
 	<div class="footer-bottom">
 		<p>© <?php echo esc_html( wp_date( 'Y' ) ); ?> Granistone. Todos os direitos reservados.</p>
-		<nav aria-label="<?php esc_attr_e( 'Redes e contatos', 'granistone-intranet' ); ?>"><a href="#contatos">Instagram</a><a href="#contatos">LinkedIn</a><a href="mailto:<?php echo esc_attr( granistone_theme_text( 'footer_email', 'comunicacao@granistone.com.br' ) ); ?>">Contato interno</a></nav>
+		<nav aria-label="<?php esc_attr_e( 'Redes e contatos', 'granistone-intranet' ); ?>"><a href="#contatos">Instagram</a><a href="#contatos">LinkedIn</a><a href="mailto:<?php echo esc_attr( granistone_theme_text( 'footer_email', 'comunicacao@granistone.com.br' ) ); ?>">Contato interno</a><a href="<?php echo esc_url( home_url( '/#denuncias' ) ); ?>"><?php esc_html_e( 'Portal de Denúncias', 'granistone-intranet' ); ?></a></nav>
 	</div>
 </footer>
 <?php

@@ -9,6 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+const GRANISTONE_DENUNCIAS_DEFAULT_URL = 'https://canalconfidencial.com.br/canaldedenunciasgranistone/';
+
 function granistone_setup() {
 	add_theme_support( 'title-tag' );
 	add_theme_support( 'post-thumbnails' );
@@ -152,6 +154,10 @@ function granistone_customize_register( $wp_customize ) {
 			'title'       => __( 'Canal de ideias', 'granistone-intranet' ),
 			'description' => __( 'Chamada do formulário de sugestões.', 'granistone-intranet' ),
 		),
+		'reporting' => array(
+			'title'       => __( 'Portal de Denúncias', 'granistone-intranet' ),
+			'description' => __( 'Use o endereço do canal oficial. O QR Code acompanha o endereço padrão.', 'granistone-intranet' ),
+		),
 		'footer' => array(
 			'title'       => __( 'Rodapé', 'granistone-intranet' ),
 			'description' => __( 'Assinatura, frase e contato institucional.', 'granistone-intranet' ),
@@ -234,6 +240,8 @@ function granistone_customize_register( $wp_customize ) {
 		array( 'ideas', 'ideas_eyebrow', 'Identificação', 'SUA VOZ IMPORTA' ),
 		array( 'ideas', 'ideas_title', 'Título', 'Tem uma ideia para melhorar nosso dia a dia?' ),
 		array( 'ideas', 'ideas_body', 'Texto de apresentação', 'Compartilhe sua sugestão. Boas transformações começam com uma boa conversa.', 'textarea' ),
+
+		array( 'reporting', 'denuncias_url', 'Endereço do Portal de Denúncias', GRANISTONE_DENUNCIAS_DEFAULT_URL, 'url' ),
 
 		array( 'footer', 'footer_tagline', 'Descrição da empresa', 'Excelência em Rochas Ornamentais desde 1989.' ),
 		array( 'footer', 'footer_quote_primary', 'Frase principal', '“Grandes histórias são' ),

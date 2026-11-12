@@ -4,7 +4,7 @@ GRANISTONE — PORTAL DO COLABORADOR
 INSTALAÇÃO
 1. Acesse Aparência > Temas > Adicionar novo.
 2. Clique em Enviar tema.
-3. Selecione granistone-intranet-v1.14.0.zip.
+3. Selecione granistone-intranet-v1.14.3.zip.
 4. Instale e ative.
 
 O tema é um tema clássico independente e contém:
@@ -24,6 +24,7 @@ O tema é um tema clássico independente e contém:
 - Pedra do popup vinculada automaticamente ao salmo em exibição.
 - Escala tipográfica ampliada para textos de apoio, metadados, menus e botões, preservando os títulos.
 - Campo de imagem para a Palavra da Semana em Aparência > Personalizar > Textos do Portal > Cultura e reflexão.
+- Portal de Denúncias em Explore o portal, com link no rodapé, botão para o canal oficial e QR Code para o endereço padrão.
 
 PERSONALIZAÇÃO
 Em Aparência > Personalizar > Textos do Portal, edite a marca, capa, títulos,

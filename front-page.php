@@ -459,6 +459,27 @@ get_header();
 			<article id="biblioteca" class="resource-card resource-library"><span>▤</span><div><p>BIBLIOTECA INTERNA</p><h3>Documentos para o seu dia</h3><a href="#biblioteca">Acessar arquivos ↗</a></div></article>
 			<article class="resource-card resource-spiritual"><span>✦</span><div><p>MOMENTO DE REFLEXÃO</p><h3>Uma pausa para renovar a fé</h3><a href="#cultura">Ler mensagem ↗</a></div></article>
 		</div>
+		<?php
+		$denuncias_url = esc_url_raw( granistone_theme_text( 'denuncias_url', GRANISTONE_DENUNCIAS_DEFAULT_URL ), array( 'https' ) );
+		if ( '' === $denuncias_url ) {
+			$denuncias_url = GRANISTONE_DENUNCIAS_DEFAULT_URL;
+		}
+		?>
+		<section class="reporting-section" id="denuncias" aria-labelledby="denuncias-title">
+			<div class="reporting-copy">
+				<h3 id="denuncias-title"><?php esc_html_e( 'Portal de Denúncias', 'granistone-intranet' ); ?></h3>
+				<p><?php esc_html_e( 'Use o canal oficial da Granistone para relatar condutas indevidas.', 'granistone-intranet' ); ?></p>
+				<a class="button button-primary" href="<?php echo esc_url( $denuncias_url ); ?>">
+					<?php esc_html_e( 'Acessar Portal de Denúncias', 'granistone-intranet' ); ?> <span aria-hidden="true">↗</span>
+				</a>
+			</div>
+			<?php if ( GRANISTONE_DENUNCIAS_DEFAULT_URL === $denuncias_url ) : ?>
+				<figure class="reporting-qr">
+					<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/denuncias-qr.png' ) ); ?>" width="128" height="128" loading="lazy" alt="<?php esc_attr_e( 'QR Code do Portal de Denúncias da Granistone', 'granistone-intranet' ); ?>">
+					<figcaption><?php esc_html_e( 'Ou escaneie o QR Code pelo celular.', 'granistone-intranet' ); ?></figcaption>
+				</figure>
+			<?php endif; ?>
+		</section>
 	</section>
 
 	<section class="idea-section" id="ideias">
