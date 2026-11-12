@@ -13,6 +13,7 @@
 </head>
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
+<a class="skip-link" href="#conteudo-principal"><?php esc_html_e( 'Pular para o conteúdo', 'granistone-intranet' ); ?></a>
 <header class="site-header">
 	<a class="brand" href="<?php echo esc_url( home_url( '/#inicio' ) ); ?>" aria-label="<?php esc_attr_e( 'Granistone, início', 'granistone-intranet' ); ?>">
 		<img class="brand-logo" src="<?php echo esc_url( granistone_logo_url() ); ?>" alt="<?php echo esc_attr( granistone_theme_text( 'brand_name', 'Granistone' ) ); ?>">
@@ -30,6 +31,6 @@
 	</nav>
 	<div class="header-actions">
 		<a class="search-button" href="<?php echo esc_url( home_url( '/?s=' ) ); ?>" aria-label="<?php esc_attr_e( 'Buscar no portal', 'granistone-intranet' ); ?>"><span aria-hidden="true">⌕</span></a>
-		<button class="menu-button" type="button" aria-label="<?php esc_attr_e( 'Abrir menu', 'granistone-intranet' ); ?>" aria-expanded="false" aria-controls="main-nav"><span></span><span></span></button>
+		<button class="menu-button" type="button" aria-label="<?php esc_attr_e( 'Menu principal', 'granistone-intranet' ); ?>" aria-expanded="false" aria-controls="main-nav"><span></span><span></span></button>
 	</div>
 </header>

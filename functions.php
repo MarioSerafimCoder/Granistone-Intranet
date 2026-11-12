@@ -38,11 +38,18 @@ add_action( 'after_setup_theme', 'granistone_setup' );
 
 function granistone_assets() {
 	$version = wp_get_theme()->get( 'Version' );
+	$dependencies = array();
 	wp_enqueue_style( 'granistone-style', get_stylesheet_uri(), array(), $version );
+
+	if ( is_front_page() && GRANISTONE_DENUNCIAS_DEFAULT_URL !== granistone_denuncias_url() ) {
+		wp_enqueue_script( 'granistone-qrcode', get_theme_file_uri( 'assets/js/vendor/qrcode.js' ), array(), '1.4.4', true );
+		$dependencies[] = 'granistone-qrcode';
+	}
+
 	wp_enqueue_script(
 		'granistone-theme',
 		get_theme_file_uri( 'assets/js/theme.js' ),
-		array(),
+		$dependencies,
 		$version,
 		true
 	);
@@ -58,6 +65,78 @@ add_action( 'wp_enqueue_scripts', 'granistone_assets' );
  */
 function granistone_theme_text( $key, $default = '' ) {
 	return get_theme_mod( 'granistone_' . $key, $default );
+}
+
+function granistone_denuncias_url() {
+	$url   = esc_url_raw( granistone_theme_text( 'denuncias_url', GRANISTONE_DENUNCIAS_DEFAULT_URL ), array( 'https' ) );
+	$parts = wp_parse_url( $url );
+
+	return isset( $parts['scheme'], $parts['host'] ) && 'https' === strtolower( $parts['scheme'] ) && ! empty( $parts['host'] )
+		? $url
+		: GRANISTONE_DENUNCIAS_DEFAULT_URL;
+}
+
+/**
+ * Exibe um ícone decorativo com traçado consistente.
+ *
+ * @param string $name Nome do ícone.
+ */
+function granistone_icon( $name ) {
+	$paths = array(
+		'calendar' => '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18m-13 5h2m4 0h2"/>',
+		'document' => '<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8l-5-5z"/><path d="M14 3v5h5M8 13h8m-8 4h6"/>',
+		'video'    => '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m10 8 6 4-6 4z"/>',
+		'idea'     => '<path d="M9 18h6m-5 3h4m-5-6a6 6 0 1 1 6 0v1H9z"/>',
+		'shield'   => '<path d="M12 22s7-3.5 7-10V5l-7-3-7 3v7c0 6.5 7 10 7 10z"/><path d="m9 12 2 2 4-4"/>',
+		'arrow'    => '<path d="M4 12h15m-6-6 6 6-6 6"/>',
+		'external' => '<path d="M13 5h6v6m0-6-9 9m6-1v6H5V8h6"/>',
+	);
+
+	if ( isset( $paths[ $name ] ) ) {
+		echo '<svg class="portal-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' . $paths[ $name ] . '</svg>'; // Marcação fixa do tema.
+	}
+}
+
+/**
+ * Exclui da home apenas os registros de demonstração confirmados.
+ * Conferir ID, slug e texto provisório preserva registros reaproveitados.
+ *
+ * @return int[]
+ */
+function granistone_demo_news_ids() {
+	$demo_slugs = array(
+		1108 => 'why-you-need-search-engine-optimization',
+		1106 => 'how-to-get-organic-traffic-from-search-engines',
+		1104 => 'what-platforms-does-social-media-management-cover',
+		1102 => 'how-to-optimize-content-for-seo-a-quick-guide',
+		1099 => 'creating-an-effective-social-media-marketing-campaign',
+		318  => 'tincidunt-augue-interdum-wuismod-pellentesque',
+		315  => 'pulvinar-mattis-nunc-sedblandit-libero-volutpat',
+		312  => 'porttitor-egetdolor-morbi-nonarcu-risusquis',
+		310  => 'diam-volutpat-commodo-egestas-fringilla',
+		304  => 'cursus-inhac-habitasse-platea-dictumst-quisque',
+		301  => 'quis-hendrerit-dolor-magna-eget-ostilamus-lorem',
+		298  => 'donec-massa-sapien-faucibus-etmolestie',
+		295  => 'morbi-leo-urna-molestie-atelementum-eufacilisis',
+	);
+	$posts = get_posts(
+		array(
+			'post_type'      => 'post',
+			'post_status'    => 'publish',
+			'post__in'       => array_keys( $demo_slugs ),
+			'posts_per_page' => count( $demo_slugs ),
+		)
+	);
+	$excluded = array();
+
+	foreach ( $posts as $post ) {
+		$body = trim( wp_strip_all_tags( $post->post_content ) );
+		if ( $demo_slugs[ $post->ID ] === $post->post_name && preg_match( '/^(lorem ipsum dolor sit amet|sed arcu non odio euismod lacinia)/i', $body ) ) {
+			$excluded[] = $post->ID;
+		}
+	}
+
+	return $excluded;
 }
 
 /**
@@ -156,7 +235,7 @@ function granistone_customize_register( $wp_customize ) {
 		),
 		'reporting' => array(
 			'title'       => __( 'Portal de Denúncias', 'granistone-intranet' ),
-			'description' => __( 'Use o endereço do canal oficial. O QR Code acompanha o endereço padrão.', 'granistone-intranet' ),
+			'description' => __( 'Use o endereço HTTPS do canal oficial. O botão e o QR Code usam o mesmo endereço.', 'granistone-intranet' ),
 		),
 		'footer' => array(
 			'title'       => __( 'Rodapé', 'granistone-intranet' ),
@@ -203,6 +282,7 @@ function granistone_customize_register( $wp_customize ) {
 		array( 'headings', 'agenda_eyebrow', 'Agenda: identificação', 'PROGRAME-SE' ),
 		array( 'headings', 'agenda_title', 'Agenda: título', 'Agenda Granistone' ),
 		array( 'headings', 'agenda_intro', 'Agenda: introdução', 'Encontros, treinamentos e datas que fortalecem nossa conexão.', 'textarea' ),
+		array( 'headings', 'agenda_calendar_url', 'Agenda: endereço do calendário completo', '', 'url' ),
 		array( 'headings', 'people_eyebrow', 'Pessoas: identificação', 'NOSSA GENTE' ),
 		array( 'headings', 'people_title', 'Pessoas: título', 'Celebramos quem faz parte' ),
 		array( 'headings', 'people_note', 'Pessoas: mensagem', 'Parabéns! Que o novo ciclo seja cheio de conquistas.', 'textarea' ),
@@ -232,6 +312,7 @@ function granistone_customize_register( $wp_customize ) {
 		array( 'recognition', 'recognition_one_title', 'Card 1: título', 'Marcos Almeida' ),
 		array( 'recognition', 'recognition_one_text', 'Card 1: texto', 'Pela liderança, atenção à segurança e cuidado com toda a equipe.', 'textarea' ),
 		array( 'recognition', 'recognition_one_detail', 'Card 1: detalhe', 'Produção · Unidade ES' ),
+		array( 'recognition', 'recognition_one_month', 'Card 1: mês de referência (AAAA-MM)', '' ),
 		array( 'recognition', 'recognition_two_label', 'Card 2: identificação', 'ATITUDE QUE INSPIRA' ),
 		array( 'recognition', 'recognition_two_title', 'Card 2: título', 'Equipe de Logística' ),
 		array( 'recognition', 'recognition_two_text', 'Card 2: texto', 'Colaboração que transformou um desafio em uma entrega exemplar.', 'textarea' ),
