@@ -311,64 +311,80 @@ get_header();
 	<?php
 		$portal_today = current_datetime();
 		$calendar_url = esc_url( granistone_theme_text( 'agenda_calendar_url' ) );
-		$events_query = new WP_Query(
+		$event_posts = get_posts(
 			array(
 				'post_type'      => 'granistone_event',
 				'post_status'    => 'publish',
-				'posts_per_page' => 8,
-				'orderby'        => array( 'event_date' => 'ASC', 'ID' => 'ASC' ),
-				'meta_query'     => array(
-					// As datas ISO (AAAA-MM-DD) também têm ordenação cronológica como texto.
-					'event_date' => array(
-						'key'     => '_granistone_event_date',
-						'value'   => $portal_today->format( 'Y-m-d' ),
-						'compare' => '>=',
-					),
-				),
+				'posts_per_page' => -1,
+				'meta_key'       => '_granistone_event_date',
+				'orderby'        => array( 'meta_value' => 'ASC', 'ID' => 'ASC' ),
 			)
 		);
-		$event_categories = $events_query->posts && taxonomy_exists( 'granistone_event_category' )
-			? get_terms( array( 'taxonomy' => 'granistone_event_category', 'object_ids' => wp_list_pluck( $events_query->posts, 'ID' ), 'orderby' => 'name' ) )
+		$upcoming_events = array();
+		$past_events     = array();
+		$today_date      = $portal_today->format( 'Y-m-d' );
+		foreach ( $event_posts as $event_post ) {
+			$date = get_post_meta( $event_post->ID, '_granistone_event_date', true );
+			if ( ! is_string( $date ) || ! preg_match( '/^\d{4}-\d{2}-\d{2}$/D', $date ) ) {
+				continue;
+			}
+			$day = DateTimeImmutable::createFromFormat( '!Y-m-d', $date, $portal_today->getTimezone() );
+			if ( ! $day || $day->format( 'Y-m-d' ) !== $date ) {
+				continue;
+			}
+			$entry = array( 'post' => $event_post, 'day' => $day );
+			if ( $date >= $today_date ) {
+				$upcoming_events[] = $entry;
+			} else {
+				$past_events[] = $entry;
+			}
+		}
+		$showing_past     = empty( $upcoming_events ) && ! empty( $past_events );
+		$display_events   = array_slice( $showing_past ? array_reverse( $past_events ) : $upcoming_events, 0, 8 );
+		$event_ids        = wp_list_pluck( wp_list_pluck( $display_events, 'post' ), 'ID' );
+		$event_categories = $event_ids && taxonomy_exists( 'granistone_event_category' )
+			? get_terms( array( 'taxonomy' => 'granistone_event_category', 'object_ids' => $event_ids, 'orderby' => 'name' ) )
 			: array();
 		$event_categories = is_wp_error( $event_categories ) ? array() : $event_categories;
 	?>
-	<section class="agenda-section<?php echo $events_query->post_count ? '' : ' agenda-section-empty'; ?>" id="agenda">
+	<section class="agenda-section<?php echo $display_events ? '' : ' agenda-section-empty'; ?>" id="agenda">
 		<div class="agenda-intro">
 			<p class="eyebrow"><?php echo esc_html( granistone_theme_text( 'agenda_eyebrow', 'PROGRAME-SE' ) ); ?></p><h2><?php echo esc_html( granistone_theme_text( 'agenda_title', 'Agenda Granistone' ) ); ?></h2><p><?php echo esc_html( granistone_theme_text( 'agenda_intro', 'Encontros, treinamentos e datas que fortalecem nossa conexão.' ) ); ?></p>
 			<?php if ( $event_categories ) : ?>
 				<div class="agenda-filters" aria-label="<?php esc_attr_e( 'Filtrar eventos', 'granistone-intranet' ); ?>"><button class="active" type="button" data-event-filter="Todos">Todos</button><?php foreach ( $event_categories as $event_category ) : ?><button type="button" data-event-filter="<?php echo esc_attr( $event_category->slug ); ?>"><?php echo esc_html( $event_category->name ); ?></button><?php endforeach; ?></div>
 			<?php endif; ?>
-			<?php if ( $calendar_url && $events_query->post_count ) : ?>
+			<?php if ( $calendar_url && $display_events ) : ?>
 				<a class="button button-dark" href="<?php echo esc_url( $calendar_url ); ?>"><?php esc_html_e( 'Ver calendário completo', 'granistone-intranet' ); ?> <?php granistone_icon( 'arrow' ); ?></a>
 			<?php endif; ?>
 		</div>
 		<div class="event-list" aria-live="polite">
-			<?php if ( $events_query->have_posts() ) : ?>
-				<?php while ( $events_query->have_posts() ) : ?>
+			<?php if ( $display_events ) : ?>
+				<?php if ( $showing_past ) : ?>
+					<h3 class="list-label"><?php esc_html_e( 'Eventos anteriores', 'granistone-intranet' ); ?></h3>
+					<p><?php esc_html_e( 'Não há próximos eventos cadastrados.', 'granistone-intranet' ); ?></p>
+				<?php endif; ?>
+				<?php foreach ( $display_events as $event ) : ?>
 					<?php
-					$events_query->the_post();
-					$event_date       = get_post_meta( get_the_ID(), '_granistone_event_date', true );
-					$event_time       = get_post_meta( get_the_ID(), '_granistone_event_time', true );
-					$event_location   = get_post_meta( get_the_ID(), '_granistone_event_location', true );
-					$event_link       = get_post_meta( get_the_ID(), '_granistone_event_link', true );
-					$event_terms      = get_the_terms( get_the_ID(), 'granistone_event_category' );
+					$event_id        = $event['post']->ID;
+					$event_date      = $event['day']->format( 'Y-m-d' );
+					$event_timestamp = $event['day']->getTimestamp();
+					$event_title     = get_the_title( $event_id );
+					$event_time      = get_post_meta( $event_id, '_granistone_event_time', true );
+					$event_location  = get_post_meta( $event_id, '_granistone_event_location', true );
+					$event_link      = get_post_meta( $event_id, '_granistone_event_link', true );
+					$event_terms     = get_the_terms( $event_id, 'granistone_event_category' );
 					$event_terms      = ( ! is_wp_error( $event_terms ) && ! empty( $event_terms ) ) ? $event_terms : array();
 					$event_label      = ! empty( $event_terms ) ? $event_terms[0]->name : 'Evento';
 					$event_filters    = ! empty( $event_terms ) ? implode( '|', wp_list_pluck( $event_terms, 'slug' ) ) : 'outros';
-					$event_day        = DateTimeImmutable::createFromFormat( '!Y-m-d', $event_date, $portal_today->getTimezone() );
-					if ( ! $event_day || $event_day->format( 'Y-m-d' ) !== $event_date ) {
-						continue;
-					}
-					$event_timestamp  = $event_day->getTimestamp();
 					$event_time_label = $event_time ? str_replace( ':', 'h', $event_time ) : '';
 					$event_detail     = trim( $event_time_label . ( $event_time_label && $event_location ? ' · ' : '' ) . $event_location );
 					?>
 					<article class="event-row" data-event-category="<?php echo esc_attr( $event_filters ); ?>">
-						<time class="event-date" datetime="<?php echo esc_attr( $event_date ); ?>"><strong><?php echo esc_html( wp_date( 'd', $event_timestamp ) ); ?></strong><span><?php echo esc_html( wp_date( 'M', $event_timestamp ) ); ?></span></time>
-						<div class="event-detail"><span><?php echo esc_html( $event_label ); ?></span><h3><?php the_title(); ?></h3><p><?php echo esc_html( $event_detail ); ?></p></div>
-						<?php if ( $event_link ) : ?><a class="event-action" href="<?php echo esc_url( $event_link ); ?>" target="_blank" rel="noreferrer" aria-label="<?php echo esc_attr( sprintf( __( 'Ver detalhes de %s', 'granistone-intranet' ), get_the_title() ) ); ?>"><?php granistone_icon( 'external' ); ?></a><?php endif; ?>
+						<time class="event-date" datetime="<?php echo esc_attr( $event_date ); ?>"><strong><?php echo esc_html( wp_date( 'd', $event_timestamp ) ); ?></strong><span><?php echo esc_html( wp_date( $showing_past ? 'M Y' : 'M', $event_timestamp ) ); ?></span></time>
+						<div class="event-detail"><span><?php echo esc_html( $event_label ); ?></span><h3><?php echo esc_html( $event_title ); ?></h3><p><?php echo esc_html( $event_detail ); ?></p></div>
+						<?php if ( $event_link ) : ?><a class="event-action" href="<?php echo esc_url( $event_link ); ?>" target="_blank" rel="noreferrer" aria-label="<?php echo esc_attr( sprintf( __( 'Ver detalhes de %s', 'granistone-intranet' ), $event_title ) ); ?>"><?php granistone_icon( 'external' ); ?></a><?php endif; ?>
 					</article>
-				<?php endwhile; ?>
+				<?php endforeach; ?>
 			<?php else : ?>
 				<div class="agenda-empty">
 					<h3><?php esc_html_e( 'Nenhum evento programado no momento.', 'granistone-intranet' ); ?></h3>
@@ -379,7 +395,6 @@ get_header();
 				</div>
 			<?php endif; ?>
 		</div>
-		<?php wp_reset_postdata(); ?>
 	</section>
 
 	<section class="section people-section" id="pessoas">
@@ -393,13 +408,29 @@ get_header();
 				'orderby'        => array( 'menu_order' => 'ASC', 'title' => 'ASC' ),
 			)
 		);
-		$featured_person    = null;
-		$display_birthdays  = array();
-		$display_month      = (int) $portal_today->format( 'n' );
+		$featured_person = null;
+		$birthdays       = array();
+		$current_month   = (int) $portal_today->format( 'n' );
+		$display_period  = $portal_today->modify( 'first day of this month' );
 		foreach ( $birthday_posts as $birthday_post ) {
-			if ( $display_month !== absint( get_post_meta( $birthday_post->ID, '_granistone_birthday_month', true ) ) ) {
-				continue;
+			$month = absint( get_post_meta( $birthday_post->ID, '_granistone_birthday_month', true ) );
+			$day   = absint( get_post_meta( $birthday_post->ID, '_granistone_birthday_day', true ) );
+			if ( checkdate( $month, $day, 2000 ) ) {
+				$birthdays[ $month ][] = $birthday_post;
 			}
+		}
+		if ( $birthdays && empty( $birthdays[ $current_month ] ) ) {
+			for ( $offset = 1; $offset < 12; $offset++ ) {
+				$candidate = $display_period->modify( '+' . $offset . ' months' );
+				if ( ! empty( $birthdays[ (int) $candidate->format( 'n' ) ] ) ) {
+					$display_period = $candidate;
+					break;
+				}
+			}
+		}
+		$display_month     = (int) $display_period->format( 'n' );
+		$display_birthdays = array();
+		foreach ( $birthdays[ $display_month ] ?? array() as $birthday_post ) {
 			if ( get_post_meta( $birthday_post->ID, '_granistone_birthday_featured', true ) && ! $featured_person ) {
 				$featured_person = $birthday_post;
 				continue;
@@ -425,7 +456,11 @@ get_header();
 				?>
 				<article class="featured-person"><div class="portrait portrait-featured" <?php if ( $featured_image ) : ?>style="background-image:url('<?php echo esc_url( $featured_image ); ?>')"<?php endif; ?>><span><?php echo esc_html( $featured_initials ); ?></span></div><div><p>CONHEÇA SEU COLEGA</p><h3><?php echo esc_html( $featured_person->post_title ); ?></h3><span><?php echo esc_html( $featured_role ); ?></span><blockquote>“<?php echo esc_html( $featured_quote ); ?>”</blockquote><a href="<?php echo esc_url( $featured_link ? $featured_link : '#pessoas' ); ?>" <?php if ( $featured_link ) : ?>target="_blank" rel="noreferrer"<?php endif; ?>>Conheça a história de <?php echo esc_html( $featured_first ); ?> <?php granistone_icon( $featured_link ? 'external' : 'arrow' ); ?></a></div></article>
 			<?php endif; ?>
-			<div class="birthday-list"><h3 class="list-label"><?php echo esc_html( sprintf( __( 'Aniversariantes de %s', 'granistone-intranet' ), wp_date( 'F', $portal_today->getTimestamp() ) ) ); ?></h3>
+			<div class="birthday-list">
+				<h3 class="list-label"><?php echo esc_html( sprintf( __( 'Aniversariantes de %s', 'granistone-intranet' ), wp_date( 'F', $display_period->getTimestamp() ) ) ); ?></h3>
+				<?php if ( $display_month !== $current_month ) : ?>
+					<p><?php esc_html_e( 'Nenhum aniversário cadastrado neste mês. Veja o próximo mês com aniversariantes.', 'granistone-intranet' ); ?></p>
+				<?php endif; ?>
 				<?php foreach ( $display_birthdays as $person ) : ?>
 					<?php
 					$person_initials = get_post_meta( $person->ID, '_granistone_birthday_initials', true );
@@ -433,9 +468,9 @@ get_header();
 					$person_day      = absint( get_post_meta( $person->ID, '_granistone_birthday_day', true ) );
 					$person_image    = get_the_post_thumbnail_url( $person->ID, 'thumbnail' );
 					?>
-					<article><div class="portrait" <?php if ( $person_image ) : ?>style="background-image:url('<?php echo esc_url( $person_image ); ?>')"<?php endif; ?>><span><?php echo esc_html( $person_initials ); ?></span></div><div><h3><?php echo esc_html( $person->post_title ); ?></h3><p><?php echo esc_html( $person_area ); ?></p></div><time><?php echo esc_html( str_pad( (string) $person_day, 2, '0', STR_PAD_LEFT ) . ' ' . granistone_upper( wp_date( 'M', mktime( 12, 0, 0, $display_month, 1 ) ) ) ); ?></time></article>
+					<article><div class="portrait" <?php if ( $person_image ) : ?>style="background-image:url('<?php echo esc_url( $person_image ); ?>')"<?php endif; ?>><span><?php echo esc_html( $person_initials ); ?></span></div><div><h3><?php echo esc_html( $person->post_title ); ?></h3><p><?php echo esc_html( $person_area ); ?></p></div><time><?php echo esc_html( str_pad( (string) $person_day, 2, '0', STR_PAD_LEFT ) . ' ' . granistone_upper( wp_date( 'M', $display_period->getTimestamp() ) ) ); ?></time></article>
 				<?php endforeach; ?>
-				<?php if ( empty( $display_birthdays ) ) : ?><p class="content-empty"><?php echo esc_html( $featured_person ? __( 'Nenhum outro aniversariante publicado neste mês.', 'granistone-intranet' ) : __( 'Nenhum aniversariante publicado neste mês.', 'granistone-intranet' ) ); ?></p><?php endif; ?>
+				<?php if ( empty( $display_birthdays ) ) : ?><p class="content-empty"><?php echo esc_html( $featured_person ? __( 'Nenhum outro aniversariante cadastrado para este período.', 'granistone-intranet' ) : __( 'Nenhum aniversariante publicado com dia e mês cadastrados.', 'granistone-intranet' ) ); ?></p><?php endif; ?>
 			</div>
 		</div>
 	</section>

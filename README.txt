@@ -4,7 +4,7 @@ GRANISTONE — PORTAL DO COLABORADOR
 INSTALAÇÃO
 1. Acesse Aparência > Temas > Adicionar novo.
 2. Clique em Enviar tema.
-3. Selecione granistone-intranet-v1.15.2.zip.
+3. Selecione granistone-intranet-v1.15.3.zip.
 4. Instale e ative.
 
 O tema é um tema clássico independente e contém:
@@ -37,7 +37,9 @@ uma integração aprovada. O formulário local não armazena nem envia sugestõe
 
 O botão Ver calendário completo fica disponível ao configurar um endereço em
 Textos do Portal > Títulos das seções. A agenda e os aniversários usam o fuso
-configurado em Configurações > Geral. O reconhecimento mensal pode ter um mês
+configurado em Configurações > Geral. Sem eventos futuros, a agenda mostra
+os eventos anteriores. Sem aniversários no mês atual, a home mostra o próximo
+mês com aniversariantes cadastrados. O reconhecimento mensal pode ter um mês
 de referência (AAAA-MM) em Textos do Portal > Reconhecimento.
 
 O QR Code padrão é local. Para endereços HTTPS personalizados, a geração
