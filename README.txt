@@ -4,7 +4,7 @@ GRANISTONE — PORTAL DO COLABORADOR
 INSTALAÇÃO
 1. Acesse Aparência > Temas > Adicionar novo.
 2. Clique em Enviar tema.
-3. Selecione granistone-intranet-v1.15.1.zip.
+3. Selecione granistone-intranet-v1.15.2.zip.
 4. Instale e ative.
 
 O tema é um tema clássico independente e contém:
@@ -18,6 +18,7 @@ O tema é um tema clássico independente e contém:
 - Comunicados, Agenda, Aniversariantes e Rochas administrados pelo plugin Granistone Conteúdos.
 - Paleta mineral com areia, ardósia, terracota e sálvia, além do Tiffany.
 - Miniaturas de vídeos e notícias exibidas em cores.
+- Player na própria home para YouTube, Vimeo e arquivos de vídeo HTTPS compatíveis.
 - Logo oficial aplicada no cabeçalho e rodapé, com suporte à Logo personalizada.
 - Doze rochas oficiais em WebP compacto, com troca automática aleatória a cada 5 segundos.
 - Popup integrado ao plugin Granistone Reflexões, com atualização nos quatro horários diários mesmo quando a página permanece aberta.

@@ -39,7 +39,7 @@ get_header();
 			<h1><?php echo esc_html( granistone_theme_text( 'hero_title_primary', 'Bem-vindo ao' ) ); ?> <span><?php echo esc_html( granistone_theme_text( 'hero_title_secondary', 'Portal Granistone' ) ); ?></span></h1>
 			<p class="hero-lead"><?php echo esc_html( granistone_theme_text( 'hero_lead', 'Informação, conexão e cultura para todos que fazem parte dessa história.' ) ); ?></p>
 			<div class="hero-actions">
-				<a class="button button-primary" href="#noticias"><?php echo esc_html( granistone_theme_text( 'hero_primary_button', 'Últimas notícias' ) ); ?> <span aria-hidden="true">↗</span></a>
+				<a class="button button-primary" href="#noticias"><?php echo esc_html( granistone_theme_text( 'hero_primary_button', 'Últimas notícias' ) ); ?> <?php granistone_icon( 'arrow' ); ?></a>
 				<a class="button button-ghost" href="#historia"><?php echo esc_html( granistone_theme_text( 'hero_secondary_button', 'Nossa história' ) ); ?></a>
 			</div>
 			<div class="hero-signature"><span>DESDE</span><strong><?php echo esc_html( granistone_theme_text( 'hero_year', '1989' ) ); ?></strong><i></i><p><?php echo esc_html( granistone_theme_text( 'hero_signature', 'Excelência em rochas ornamentais' ) ); ?></p></div>
@@ -204,7 +204,7 @@ get_header();
 		?>
 		<div class="health-heading">
 			<div><p class="eyebrow"><?php echo esc_html( granistone_theme_text( 'health_eyebrow', 'SAÚDE EM FOCO' ) ); ?></p><h2><?php echo esc_html( granistone_theme_text( 'health_title', 'Aprender também é uma forma de se cuidar.' ) ); ?></h2></div>
-			<div class="health-intro"><p><?php echo esc_html( granistone_theme_text( 'health_intro', 'Conteúdos oficiais sobre prevenção, bem-estar e segurança para cuidar da saúde dentro e fora do trabalho.' ) ); ?></p><a href="<?php echo esc_url( granistone_theme_text( 'health_channel_url', 'https://www.youtube.com/@MinSaudeBR' ) ); ?>" target="_blank" rel="noreferrer" class="text-link"><?php echo esc_html( granistone_theme_text( 'health_channel_label', 'Canal do Ministério da Saúde' ) ); ?> <span aria-hidden="true">↗</span></a></div>
+			<div class="health-intro"><p><?php echo esc_html( granistone_theme_text( 'health_intro', 'Conteúdos oficiais sobre prevenção, bem-estar e segurança para cuidar da saúde dentro e fora do trabalho.' ) ); ?></p><a href="<?php echo esc_url( granistone_theme_text( 'health_channel_url', 'https://www.youtube.com/@MinSaudeBR' ) ); ?>" target="_blank" rel="noreferrer" class="text-link"><?php echo esc_html( granistone_theme_text( 'health_channel_label', 'Canal do Ministério da Saúde' ) ); ?> <?php granistone_icon( 'external' ); ?></a></div>
 		</div>
 		<div class="health-toolbar">
 			<p><strong class="health-count"><?php echo esc_html( $health_videos_query->post_count ); ?></strong> vídeos indexados</p>
@@ -226,7 +226,7 @@ get_header();
 					$video_category        = ! empty( $video_terms ) ? $video_terms[0]->name : __( 'Outros', 'granistone-intranet' );
 					$video_category_filter = ! empty( $video_terms ) ? implode( '|', wp_list_pluck( $video_terms, 'slug' ) ) : 'outros';
 					$video_url             = function_exists( 'granistone_video_get_url' ) ? granistone_video_get_url( $video_post_id ) : get_post_meta( $video_post_id, '_granistone_video_url', true );
-					$video_url             = esc_url( $video_url );
+					$player                = granistone_video_player_source( $video_url );
 					$thumbnail_url         = function_exists( 'granistone_video_get_thumbnail_url' ) ? granistone_video_get_thumbnail_url( $video_post_id ) : get_the_post_thumbnail_url( $video_post_id, 'large' );
 					$institution           = get_post_meta( $video_post_id, '_granistone_video_institution', true );
 					$badge                 = get_post_meta( $video_post_id, '_granistone_video_badge', true );
@@ -237,23 +237,23 @@ get_header();
 						$description = trim( wp_strip_all_tags( strip_shortcodes( get_the_content() ) ) );
 					}
 					?>
-					<article class="health-video-card portal-card" data-health-category="<?php echo esc_attr( $video_category_filter ); ?>">
-						<?php if ( $video_url ) : ?>
-							<a class="health-thumbnail" href="<?php echo esc_url( $video_url ); ?>" target="_blank" rel="noreferrer" aria-label="<?php echo esc_attr( sprintf( __( 'Assistir %s', 'granistone-intranet' ), get_the_title() ) ); ?>">
+					<article class="health-video-card portal-card" data-health-category="<?php echo esc_attr( $video_category_filter ); ?>" <?php if ( $player ) : ?>data-video-type="<?php echo esc_attr( $player['type'] ); ?>" data-video-src="<?php echo esc_url( $player['url'] ); ?>"<?php endif; ?>>
+						<?php if ( $player ) : ?>
+							<button type="button" class="health-thumbnail" data-video-open aria-haspopup="dialog" aria-label="<?php echo esc_attr( sprintf( __( 'Assistir %s', 'granistone-intranet' ), get_the_title() ) ); ?>">
 						<?php else : ?>
 							<div class="health-thumbnail">
 						<?php endif; ?>
 							<span class="health-thumb-fallback" aria-hidden="true"></span>
 							<?php if ( $thumbnail_url ) : ?><img src="<?php echo esc_url( $thumbnail_url ); ?>" alt="" loading="lazy" decoding="async"><?php endif; ?>
-							<?php if ( $video_url ) : ?><span class="health-play" aria-hidden="true"></span><?php endif; ?>
+							<?php if ( $player ) : ?><span class="health-play" aria-hidden="true"></span><?php endif; ?>
 							<small><?php echo esc_html( $video_label ); ?></small>
-						<?php if ( $video_url ) : ?></a><?php else : ?></div><?php endif; ?>
+						<?php if ( $player ) : ?></button><?php else : ?></div><?php endif; ?>
 						<div class="health-video-copy">
 							<div><span><?php echo esc_html( $video_category ); ?></span><small><?php echo esc_html( $institution ); ?></small></div>
 							<h3><?php the_title(); ?></h3>
 							<?php if ( $description ) : ?><p><?php echo esc_html( $description ); ?></p><?php endif; ?>
-							<?php if ( $video_url ) : ?>
-								<a href="<?php echo esc_url( $video_url ); ?>" target="_blank" rel="noreferrer"><?php esc_html_e( 'Assistir vídeo', 'granistone-intranet' ); ?> <?php granistone_icon( 'external' ); ?></a>
+							<?php if ( $player ) : ?>
+								<button type="button" class="health-watch" data-video-open aria-haspopup="dialog" aria-label="<?php echo esc_attr( sprintf( __( 'Assistir %s', 'granistone-intranet' ), get_the_title() ) ); ?>"><?php esc_html_e( 'Assistir vídeo', 'granistone-intranet' ); ?> <?php granistone_icon( 'play' ); ?></button>
 							<?php else : ?>
 								<p class="video-unavailable"><?php esc_html_e( 'Vídeo indisponível', 'granistone-intranet' ); ?></p>
 							<?php endif; ?>
@@ -268,6 +268,15 @@ get_header();
 		</div>
 		<?php wp_reset_postdata(); ?>
 		<p class="health-disclaimer"><?php echo esc_html( granistone_theme_text( 'health_disclaimer', 'Conteúdo educativo. Em caso de sintomas ou dúvidas individuais, procure orientação de um profissional de saúde.' ) ); ?></p>
+		<dialog class="portal-video-dialog" id="portal-video-dialog" aria-labelledby="portal-video-title">
+			<div class="portal-video-heading">
+				<h3 id="portal-video-title"></h3>
+				<button type="button" class="portal-video-close" data-video-close autofocus><?php esc_html_e( 'Fechar', 'granistone-intranet' ); ?></button>
+			</div>
+			<div class="portal-video-media" data-video-media></div>
+			<p class="portal-video-description" data-video-description hidden></p>
+			<p class="portal-video-error" role="status" hidden><?php esc_html_e( 'Não foi possível reproduzir este vídeo.', 'granistone-intranet' ); ?></p>
+		</dialog>
 	</section>
 
 	<section class="section news-section" id="noticias">
@@ -414,7 +423,7 @@ get_header();
 				$featured_image    = get_the_post_thumbnail_url( $featured_person->ID, 'large' );
 				$featured_first    = strtok( $featured_person->post_title, ' ' );
 				?>
-				<article class="featured-person"><div class="portrait portrait-featured" <?php if ( $featured_image ) : ?>style="background-image:url('<?php echo esc_url( $featured_image ); ?>')"<?php endif; ?>><span><?php echo esc_html( $featured_initials ); ?></span></div><div><p>CONHEÇA SEU COLEGA</p><h3><?php echo esc_html( $featured_person->post_title ); ?></h3><span><?php echo esc_html( $featured_role ); ?></span><blockquote>“<?php echo esc_html( $featured_quote ); ?>”</blockquote><a href="<?php echo esc_url( $featured_link ? $featured_link : '#pessoas' ); ?>" <?php if ( $featured_link ) : ?>target="_blank" rel="noreferrer"<?php endif; ?>>Conheça a história de <?php echo esc_html( $featured_first ); ?> <span aria-hidden="true">↗</span></a></div></article>
+				<article class="featured-person"><div class="portrait portrait-featured" <?php if ( $featured_image ) : ?>style="background-image:url('<?php echo esc_url( $featured_image ); ?>')"<?php endif; ?>><span><?php echo esc_html( $featured_initials ); ?></span></div><div><p>CONHEÇA SEU COLEGA</p><h3><?php echo esc_html( $featured_person->post_title ); ?></h3><span><?php echo esc_html( $featured_role ); ?></span><blockquote>“<?php echo esc_html( $featured_quote ); ?>”</blockquote><a href="<?php echo esc_url( $featured_link ? $featured_link : '#pessoas' ); ?>" <?php if ( $featured_link ) : ?>target="_blank" rel="noreferrer"<?php endif; ?>>Conheça a história de <?php echo esc_html( $featured_first ); ?> <?php granistone_icon( $featured_link ? 'external' : 'arrow' ); ?></a></div></article>
 			<?php endif; ?>
 			<div class="birthday-list"><h3 class="list-label"><?php echo esc_html( sprintf( __( 'Aniversariantes de %s', 'granistone-intranet' ), wp_date( 'F', $portal_today->getTimestamp() ) ) ); ?></h3>
 				<?php foreach ( $display_birthdays as $person ) : ?>
@@ -432,7 +441,7 @@ get_header();
 	</section>
 
 	<section class="history-section" id="historia">
-		<div class="history-copy"><p class="eyebrow"><?php echo esc_html( granistone_theme_text( 'history_eyebrow', 'NOSSA HISTÓRIA' ) ); ?></p><h2><?php echo esc_html( granistone_theme_text( 'history_title', 'Da origem à excelência,' ) ); ?> <span><?php echo esc_html( granistone_theme_text( 'history_highlight', 'uma história escrita em pedra.' ) ); ?></span></h2><p><?php echo esc_html( granistone_theme_text( 'history_body', 'Desde 1989, a Granistone une conhecimento, tecnologia e respeito à natureza para levar a beleza das rochas brasileiras a diferentes mercados do mundo.' ) ); ?></p><a href="#historia" class="button button-outline-light"><?php echo esc_html( granistone_theme_text( 'history_button', 'Conheça a Granistone' ) ); ?> <span aria-hidden="true">↗</span></a></div>
+		<div class="history-copy"><p class="eyebrow"><?php echo esc_html( granistone_theme_text( 'history_eyebrow', 'NOSSA HISTÓRIA' ) ); ?></p><h2><?php echo esc_html( granistone_theme_text( 'history_title', 'Da origem à excelência,' ) ); ?> <span><?php echo esc_html( granistone_theme_text( 'history_highlight', 'uma história escrita em pedra.' ) ); ?></span></h2><p><?php echo esc_html( granistone_theme_text( 'history_body', 'Desde 1989, a Granistone une conhecimento, tecnologia e respeito à natureza para levar a beleza das rochas brasileiras a diferentes mercados do mundo.' ) ); ?></p><a href="#historia" class="button button-outline-light"><?php echo esc_html( granistone_theme_text( 'history_button', 'Conheça a Granistone' ) ); ?> <?php granistone_icon( 'arrow' ); ?></a></div>
 		<ol class="timeline"><li><strong>1989</strong><div><h3>Fundação</h3><p>O início de uma história movida por visão e coragem.</p></div></li><li><strong>2001</strong><div><h3>Expansão das operações</h3><p>Novas frentes e capacidade produtiva ampliada.</p></div></li><li><strong>2012</strong><div><h3>Reconhecimento internacional</h3><p>A pedra brasileira conquistando novos destinos.</p></div></li><li><strong>HOJE</strong><div><h3>Granistone hoje</h3><p>Excelência, pessoas e propósito em evolução constante.</p></div></li></ol>
 	</section>
 
@@ -471,9 +480,9 @@ get_header();
 	<section class="section resources-section">
 		<div class="section-heading"><div><p class="eyebrow"><?php echo esc_html( granistone_theme_text( 'resources_eyebrow', 'CONTEÚDO E SERVIÇOS' ) ); ?></p><h2><?php echo esc_html( granistone_theme_text( 'resources_title', 'Explore o portal' ) ); ?></h2></div></div>
 		<div class="resource-grid">
-			<article id="videos" class="resource-card resource-video"><span>▷</span><div><p>VÍDEOS GRANISTONE</p><h3>Por dentro da nossa essência</h3><a href="#saude">Assistir agora ↗</a></div></article>
-			<article id="biblioteca" class="resource-card resource-library"><span>▤</span><div><p>BIBLIOTECA INTERNA</p><h3>Documentos para o seu dia</h3><a href="#biblioteca">Acessar arquivos ↗</a></div></article>
-			<article class="resource-card resource-spiritual"><span>✦</span><div><p>MOMENTO DE REFLEXÃO</p><h3>Uma pausa para renovar a fé</h3><a href="#cultura">Ler mensagem ↗</a></div></article>
+			<article id="videos" class="resource-card resource-video"><span>▷</span><div><p>VÍDEOS GRANISTONE</p><h3>Por dentro da nossa essência</h3><a href="#saude">Assistir agora <?php granistone_icon( 'arrow' ); ?></a></div></article>
+			<article id="biblioteca" class="resource-card resource-library"><span>▤</span><div><p>BIBLIOTECA INTERNA</p><h3>Documentos para o seu dia</h3><a href="#biblioteca">Acessar arquivos <?php granistone_icon( 'arrow' ); ?></a></div></article>
+			<article class="resource-card resource-spiritual"><span>✦</span><div><p>MOMENTO DE REFLEXÃO</p><h3>Uma pausa para renovar a fé</h3><a href="#cultura">Ler mensagem <?php granistone_icon( 'arrow' ); ?></a></div></article>
 		</div>
 		<?php
 		$denuncias_url = granistone_denuncias_url();
@@ -491,7 +500,7 @@ get_header();
 			</div>
 			<figure class="reporting-qr"<?php if ( ! $default_qr ) : ?> data-reporting-qr hidden<?php endif; ?>>
 				<?php if ( $default_qr ) : ?>
-					<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/denuncias-qr.png' ) ); ?>" width="164" height="164" loading="lazy" alt="<?php esc_attr_e( 'QR Code do Canal de Denúncias da Granistone', 'granistone-intranet' ); ?>">
+					<img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/denuncias-qr.png' ) ); ?>" width="232" height="232" loading="lazy" alt="<?php esc_attr_e( 'QR Code do Canal de Denúncias da Granistone', 'granistone-intranet' ); ?>">
 				<?php else : ?>
 					<canvas role="img" aria-label="<?php esc_attr_e( 'QR Code do Canal de Denúncias da Granistone', 'granistone-intranet' ); ?>"></canvas>
 				<?php endif; ?>

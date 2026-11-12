@@ -77,6 +77,53 @@ function granistone_denuncias_url() {
 }
 
 /**
+ * Resolve apenas provedores conhecidos e arquivos de vídeo para o player.
+ *
+ * @param string $url URL cadastrada.
+ * @return array
+ */
+function granistone_video_player_source( $url ) {
+	$source = esc_url_raw( $url, array( 'https' ) );
+	$parts  = wp_parse_url( $source );
+
+	if ( empty( $parts['host'] ) || empty( $parts['scheme'] ) || 'https' !== strtolower( $parts['scheme'] ) || isset( $parts['user'] ) ) {
+		return array();
+	}
+
+	$host = strtolower( $parts['host'] );
+	$path = $parts['path'] ?? '';
+	$id   = '';
+	if ( 'youtu.be' === $host ) {
+		$id = trim( $path, '/' );
+	} elseif ( in_array( $host, array( 'youtube.com', 'www.youtube.com', 'm.youtube.com', 'www.youtube-nocookie.com' ), true ) ) {
+		if ( '/watch' === $path ) {
+			parse_str( $parts['query'] ?? '', $query );
+			$id = $query['v'] ?? '';
+		} elseif ( preg_match( '#^/(?:embed|shorts|live)/([^/]+)/?$#', $path, $matches ) ) {
+			$id = $matches[1];
+		}
+	}
+	if ( is_string( $id ) && preg_match( '/^[A-Za-z0-9_-]{11}$/D', $id ) ) {
+		return array( 'type' => 'iframe', 'url' => 'https://www.youtube-nocookie.com/embed/' . $id . '?autoplay=1&playsinline=1' );
+	}
+
+	if ( in_array( $host, array( 'vimeo.com', 'www.vimeo.com', 'player.vimeo.com' ), true ) && preg_match( '#^/(?:video/)?(\d+)/?$#D', $path, $matches ) ) {
+		parse_str( $parts['query'] ?? '', $query );
+		$params = array( 'autoplay' => '1', 'dnt' => '1' );
+		if ( isset( $query['h'] ) && is_string( $query['h'] ) && preg_match( '/^[a-zA-Z0-9]+$/D', $query['h'] ) ) {
+			$params['h'] = $query['h'];
+		}
+		return array( 'type' => 'iframe', 'url' => add_query_arg( $params, 'https://player.vimeo.com/video/' . $matches[1] ) );
+	}
+
+	if ( preg_match( '/\.(mp4|m4v|webm|ogv)$/iD', $path ) ) {
+		return array( 'type' => 'video', 'url' => $source );
+	}
+
+	return array();
+}
+
+/**
  * Exibe um ícone decorativo com traçado consistente.
  *
  * @param string $name Nome do ícone.
@@ -86,6 +133,7 @@ function granistone_icon( $name ) {
 		'calendar' => '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18m-13 5h2m4 0h2"/>',
 		'document' => '<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8l-5-5z"/><path d="M14 3v5h5M8 13h8m-8 4h6"/>',
 		'video'    => '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m10 8 6 4-6 4z"/>',
+		'play'     => '<path d="m9 5 11 7-11 7z"/>',
 		'idea'     => '<path d="M9 18h6m-5 3h4m-5-6a6 6 0 1 1 6 0v1H9z"/>',
 		'shield'   => '<path d="M12 22s7-3.5 7-10V5l-7-3-7 3v7c0 6.5 7 10 7 10z"/><path d="m9 12 2 2 4-4"/>',
 		'arrow'    => '<path d="M4 12h15m-6-6 6 6-6 6"/>',

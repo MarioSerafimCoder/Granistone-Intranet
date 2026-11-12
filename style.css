@@ -3,7 +3,7 @@ Theme Name: Granistone Intranet
 Theme URI: https://granistone.com.br/
 Author: Granistone
 Description: Tema institucional para a intranet Granistone, com comunicados, saúde, agenda, pessoas, cultura e serviços internos.
-Version: 1.15.1
+Version: 1.15.2
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
@@ -849,20 +849,6 @@ body {
   transition: transform .35s var(--ease-out), color .3s var(--ease-soft);
 }
 
-.quick-access a:hover {
-  color: #080808;
-  transform: translateY(-4px);
-}
-
-.quick-access a:hover > span {
-  color: var(--amazon);
-  transform: scale(1.28) rotate(8deg);
-}
-
-.quick-access a:hover b {
-  transform: translate(4px, -4px);
-}
-
 .announcement-card,
 .health-video-card,
 .news-card,
@@ -1562,22 +1548,6 @@ body {
   --mineral-ochre: #b28a4b;
 }
 
-.quick-access a:nth-of-type(1):hover {
-  background: var(--mineral-slate-soft);
-}
-
-.quick-access a:nth-of-type(2):hover {
-  background: var(--mineral-clay-soft);
-}
-
-.quick-access a:nth-of-type(3):hover {
-  background: var(--mineral-sage-soft);
-}
-
-.quick-access a:nth-of-type(4):hover {
-  background: var(--amazon-soft);
-}
-
 .announcement-card.green {
   background: var(--mineral-slate);
   color: white;
@@ -2125,8 +2095,11 @@ main > .section, .history-section, .recognition-section, .journey-section, .idea
 .quick-access a > span { color: var(--portal-ink); font-size: inherit; }
 .quick-access a .portal-icon { color: var(--portal-green); }
 .quick-access a .portal-icon:last-child { width: 16px; }
-.quick-access a:hover, .quick-access a[href="#denuncias"] { background: var(--portal-tint); }
-.quick-access a:hover > span { transform: none; }
+.quick-access a,
+.announcement-card.portal-card {
+  transition: background-color .32s var(--ease-soft), border-color .32s var(--ease-soft),
+    box-shadow .32s var(--ease-soft), transform .32s var(--ease-out);
+}
 
 .portal-card {
   border-radius: var(--portal-radius);
@@ -2146,12 +2119,12 @@ main > .section, .history-section, .recognition-section, .journey-section, .idea
 .announcement-card.portal-card.green { --notice-accent: var(--amazon); background: var(--portal-tint); color: var(--portal-ink); }
 .announcement-card.portal-card.sand { --notice-accent: #a4846d; background: var(--portal-nude); color: var(--portal-ink); }
 .announcement-card.portal-card.gold { --notice-accent: var(--portal-ink); background: var(--paper); color: var(--portal-ink); }
+.quick-access a:is(:hover, :focus-visible),
 .announcement-card.portal-card:is(:hover, :focus-within) {
-  background: var(--paper);
+  background: var(--portal-tint);
   border-color: var(--portal-green);
-  border-top-color: var(--amazon);
-  box-shadow: 0 6px 18px rgba(22, 22, 22, .07);
-  transform: translateY(-4px);
+  box-shadow: 0 4px 14px rgba(22, 22, 22, .08);
+  transform: translateY(-2px);
 }
 .card-topline time, .news-meta time {
   border-radius: 4px;
@@ -2190,9 +2163,10 @@ main > .section, .history-section, .recognition-section, .journey-section, .idea
 
 .health-videos-section { background: var(--portal-nude); }
 .health-video-grid {
-  align-items: start;
+  align-items: stretch;
   gap: clamp(12px, 1.5vw, 20px);
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
   margin-inline: auto;
   max-width: 1400px;
 }
@@ -2224,7 +2198,15 @@ main > .section, .history-section, .recognition-section, .journey-section, .idea
 }
 .health-video-card.portal-card { padding-bottom: 0; }
 .health-video-card.portal-card:hover, .news-card.portal-card:hover { box-shadow: none; }
-.health-thumbnail { background: var(--portal-tint); border-radius: 7px 7px 0 0; min-height: 0; }
+.health-thumbnail {
+  background: var(--portal-tint);
+  border: 0;
+  border-radius: 7px 7px 0 0;
+  flex: none;
+  min-height: 0;
+  padding: 0;
+  width: 100%;
+}
 .health-thumbnail::after { display: none; }
 .health-thumb-fallback {
   background: var(--portal-nude-deep) url("assets/images/video-fallback.webp") center / cover no-repeat;
@@ -2236,9 +2218,65 @@ main > .section, .history-section, .recognition-section, .journey-section, .idea
   border-left: 9px solid currentColor;
   content: "";
 }
-.health-video-copy { display: flex; flex-direction: column; padding: clamp(14px, 1.4vw, 20px); }
+.health-video-copy { display: flex; flex: 1; flex-direction: column; padding: clamp(14px, 1.4vw, 20px); }
 .health-video-card.portal-card .health-video-copy h3 { font-size: clamp(18px, 1.35vw, 22px); margin: 9px 0; }
 .health-video-card.portal-card .health-video-copy p { font-size: 14px; line-height: 1.45; margin: 0 0 10px; }
+.health-video-card.portal-card[data-video-src] .health-video-copy > p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+.health-video-copy .health-watch {
+  align-items: center;
+  align-self: flex-start;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  color: var(--portal-green);
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 700;
+  gap: 6px;
+  margin-top: auto;
+  min-height: 36px;
+  padding: 3px 0;
+}
+.health-watch:hover { color: var(--portal-ink); }
+.health-watch .portal-icon { height: 16px; width: 16px; }
+.portal-video-dialog {
+  background: var(--paper);
+  border: 1px solid var(--portal-border);
+  border-radius: 12px;
+  color: var(--portal-ink);
+  max-height: calc(100dvh - 24px);
+  max-width: calc(100% - 24px);
+  padding: clamp(12px, 2vw, 24px);
+  width: 880px;
+}
+.portal-video-dialog::backdrop { background: rgba(0, 0, 0, .74); }
+.portal-video-heading { align-items: start; display: flex; gap: 14px; justify-content: space-between; margin-bottom: 12px; }
+.portal-video-heading h3 { font-size: clamp(16px, 2.2vw, 26px); line-height: 1.25; margin: 0; overflow-wrap: anywhere; }
+.portal-video-close {
+  background: var(--portal-tint);
+  border: 1px solid var(--portal-border);
+  border-radius: 6px;
+  color: var(--portal-green);
+  font-size: 14px;
+  min-height: 44px;
+  padding: 6px 12px;
+}
+.portal-video-media :is(iframe, video) {
+  aspect-ratio: 16/9;
+  background: #000;
+  border: 0;
+  border-radius: 6px;
+  display: block;
+  object-fit: contain;
+  width: 100%;
+}
+.portal-video-media iframe { min-height: 200px; }
+.portal-video-description, .portal-video-error { margin: 12px 0 0; }
 .health-video-copy > p, .news-card.portal-card > p { min-height: 0; }
 .health-video-copy > a, .news-card.portal-card > a { align-self: flex-start; color: var(--portal-green); margin-top: auto; }
 .health-video-copy > .video-unavailable { font-size: 13px; margin: auto 0 0; }
@@ -2357,7 +2395,7 @@ main > .section, .history-section, .recognition-section, .journey-section, .idea
   max-width: 100%;
   padding: 14px;
   text-align: center;
-  width: 250px;
+  width: 268px;
 }
 .reporting-qr img, .reporting-qr canvas {
   background: white;
@@ -2366,13 +2404,13 @@ main > .section, .history-section, .recognition-section, .journey-section, .idea
   height: auto;
   margin: 0 auto 8px;
   max-width: 100%;
-  width: 164px;
+  width: 232px;
 }
 .reporting-qr figcaption { color: var(--muted); font-size: 13px; line-height: 1.4; }
 
-.idea-section { background: #eaf2ef; color: var(--portal-ink); }
-.idea-section .eyebrow { color: var(--portal-green); }
-.idea-section > div > p:last-child { color: var(--portal-ink); }
+.idea-section { background: linear-gradient(135deg, #192c2a, #5d7166); color: white; }
+.idea-section .eyebrow { color: #c6fff5; }
+.idea-section > div > p:last-child { color: white; }
 .idea-section form { align-self: start; gap: 16px; min-width: 0; }
 .idea-section label { min-width: 0; }
 .idea-section label > span { font-size: 14px; font-weight: 650; letter-spacing: 0; text-transform: none; }
@@ -2386,7 +2424,7 @@ main > .section, .history-section, .recognition-section, .journey-section, .idea
   width: 100%;
 }
 .idea-section :is(input, textarea):focus-visible { outline: 2px solid var(--portal-green); }
-.idea-section .form-notice { color: var(--portal-ink); font-size: 14px; grid-column: 1 / -1; margin: 0; }
+.idea-section .form-notice { color: white; font-size: 14px; grid-column: 1 / -1; margin: 0; }
 .idea-section .button-primary:disabled { background: #d6e2dc; color: #31483e; cursor: default; }
 
 .footer-bottom p, .footer-bottom a { color: #d2ddda; letter-spacing: .025em; }
@@ -2474,6 +2512,7 @@ main > .section, .history-section, .recognition-section, .journey-section, .idea
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .portal-card, .portal-card *, .reporting-link, .quick-access a { transition-duration: .01ms; }
+  .quick-access a:is(:hover, :focus-visible),
   .announcement-card.portal-card:is(:hover, :focus-within) { transform: none; }
   .timeline li, .timeline li > strong { transition: none; }
 }

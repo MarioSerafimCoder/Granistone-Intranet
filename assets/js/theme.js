@@ -270,6 +270,63 @@
     if (image.complete && !image.naturalWidth) showFallback();
   });
 
+  var videoDialog = document.querySelector("#portal-video-dialog");
+  if (videoDialog && typeof videoDialog.showModal === "function") {
+    var videoMedia = videoDialog.querySelector("[data-video-media]");
+    var videoTitle = videoDialog.querySelector("#portal-video-title");
+    var videoDescription = videoDialog.querySelector("[data-video-description]");
+    var videoError = videoDialog.querySelector(".portal-video-error");
+    var videoTrigger;
+
+    document.querySelector(".health-video-grid").addEventListener("click", function (event) {
+      var trigger = event.target.closest("[data-video-open]");
+      if (!trigger || videoDialog.open) return;
+
+      var card = trigger.closest("[data-video-src]");
+      var description = card.querySelector(".health-video-copy > p");
+      var isEmbed = card.dataset.videoType === "iframe";
+      var player = document.createElement(isEmbed ? "iframe" : "video");
+      videoTrigger = trigger;
+      videoTitle.textContent = card.querySelector("h3").textContent.trim();
+      videoDescription.textContent = description ? description.textContent.trim() : "";
+      videoDescription.hidden = !videoDescription.textContent;
+      videoError.hidden = true;
+
+      if (isEmbed) {
+        player.title = videoTitle.textContent;
+        player.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+        player.allowFullscreen = true;
+        player.referrerPolicy = "strict-origin-when-cross-origin";
+      } else {
+        player.controls = true;
+        player.playsInline = true;
+        player.preload = "metadata";
+        player.addEventListener("error", function () {
+          if (player.isConnected) videoError.hidden = false;
+        });
+      }
+
+      player.src = card.dataset.videoSrc;
+      videoMedia.appendChild(player);
+      videoDialog.showModal();
+      if (!isEmbed) player.play().catch(function () { /* Os controles ficam disponíveis. */ });
+    });
+
+    videoDialog.querySelector("[data-video-close]").addEventListener("click", function () {
+      videoDialog.close();
+    });
+    videoDialog.addEventListener("close", function () {
+      var player = videoMedia.firstElementChild;
+      if (player && player.tagName === "VIDEO") {
+        player.pause();
+        player.removeAttribute("src");
+        player.load();
+      }
+      videoMedia.textContent = "";
+      if (videoTrigger) videoTrigger.focus({ preventScroll: true });
+    });
+  }
+
   var qrFigure = document.querySelector("[data-reporting-qr]");
   var reportingLink = document.querySelector(".reporting-link");
   if (qrFigure && reportingLink && typeof window.qrcode === "function") {
@@ -338,7 +395,7 @@
     }
 
     function showReflection() {
-      if (reflectionWasSeen(currentSlot)) return;
+      if ((videoDialog && videoDialog.open) || reflectionWasSeen(currentSlot)) return;
       if (popup.hidden) focusBeforePopup = document.activeElement;
       popup.hidden = false;
       markReflectionSeen(currentSlot);
