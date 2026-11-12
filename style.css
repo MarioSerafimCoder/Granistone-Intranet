@@ -3,7 +3,7 @@ Theme Name: Granistone Intranet
 Theme URI: https://granistone.com.br/
 Author: Granistone
 Description: Tema institucional para a intranet Granistone, com comunicados, saúde, agenda, pessoas, cultura e serviços internos.
-Version: 1.15.4
+Version: 1.15.5
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
@@ -2089,7 +2089,16 @@ main > .section, .history-section, .recognition-section, .journey-section, .idea
 .quick-access a > span { color: var(--portal-ink); font-size: inherit; }
 .quick-access a .portal-icon { color: var(--portal-green); }
 .quick-access a .portal-icon:last-child { width: 16px; }
-.quick-access a,
+.quick-access a {
+  transition: background-color .24s ease, border-color .24s ease;
+}
+.quick-access a :is(span, .portal-icon) { transition: color .24s ease; }
+.quick-access a:is(:hover, :focus-visible) {
+  background: var(--portal-ink);
+  border-color: var(--portal-ink);
+}
+.quick-access a:is(:hover, :focus-visible) > span { color: var(--paper); }
+.quick-access a:is(:hover, :focus-visible) .portal-icon { color: var(--amazon); }
 .announcement-card.portal-card {
   transition: background-color .32s var(--ease-soft), border-color .32s var(--ease-soft),
     box-shadow .32s var(--ease-soft), transform .32s var(--ease-out);
@@ -2113,7 +2122,6 @@ main > .section, .history-section, .recognition-section, .journey-section, .idea
 .announcement-card.portal-card.green { --notice-accent: var(--amazon); background: var(--portal-tint); color: var(--portal-ink); }
 .announcement-card.portal-card.sand { --notice-accent: #a4846d; background: var(--portal-nude); color: var(--portal-ink); }
 .announcement-card.portal-card.gold { --notice-accent: var(--portal-ink); background: var(--paper); color: var(--portal-ink); }
-.quick-access a:is(:hover, :focus-visible),
 .announcement-card.portal-card:is(:hover, :focus-within) {
   background: var(--portal-tint);
   border-color: var(--portal-green);
@@ -2524,14 +2532,17 @@ main > :is(.section, .quick-access, .weekly-word, .agenda-section, .history-sect
 }
 
 main > :is(.section, .quick-access, .agenda-section, .weekly-word) { background: var(--paper); }
-main > :is(.journey-section, .recognition-section, .idea-section) { background: var(--portal-section-gradient); }
+main > :is(.quick-access, .weekly-word, .news-section, .people-section, .journey-section, .recognition-section, .idea-section) {
+  background: var(--portal-section-gradient);
+  border-block-start: 1px solid var(--portal-border);
+}
 .history-section, #contatos { background: var(--portal-ink); }
 .health-video-grid, .news-section-heading, .news-carousel-shell, .reporting-section { max-width: none; }
 .agenda-section, .weekly-word, .history-section, .journey-section, .recognition-section, .idea-section {
   gap: clamp(22px, 4vw, 56px);
 }
 .weekly-word { padding-block: var(--portal-section-pad); }
-.weekly-word .word-copy { background: var(--paper); min-height: 0; padding: clamp(20px, 3vw, 44px) 0; }
+.weekly-word .word-copy { background: transparent; min-height: 0; padding: clamp(20px, 3vw, 44px) 0; }
 .weekly-word .word-stone { min-height: clamp(240px, 34vw, 430px); }
 .agenda-intro, .agenda-section .event-list { padding-inline: 0; }
 .agenda-section .event-list { background: var(--paper); }
@@ -2541,13 +2552,14 @@ main > :is(.journey-section, .recognition-section, .idea-section) { background: 
 .idea-section .button-primary:disabled { background: var(--paper); border: 1px solid var(--portal-border); color: var(--muted); }
 
 .announcement-card.portal-card:is(.green, .gold),
+.recognition-cards article:first-child,
 .reporting-qr, .content-empty, .news-empty, .health-empty { background: var(--paper); }
 .announcement-card.portal-card.sand,
-.quick-access a:is(:hover, :focus-visible),
 .announcement-card.portal-card:is(:hover, :focus-within),
-.news-card.portal-card:is(:hover, :focus-within),
-.recognition-cards article:first-child { background: var(--portal-section-gradient); }
+.news-card.portal-card:is(:hover, :focus-within) { background: var(--portal-section-gradient); }
+.recognition-cards article { border: 1px solid var(--portal-border); }
 .recognition-cards article:nth-child(2), .resource-card::before { background: var(--portal-ink); }
+.recognition-cards article:nth-child(2) > span { color: var(--amazon); }
 .resource-card::after { background: transparent; }
 .portrait:not([style]) { background: var(--portal-section-gradient); }
 .values-grid article:nth-child(n):hover { background: var(--portal-ink); }
@@ -2560,7 +2572,7 @@ main > :is(.journey-section, .recognition-section, .idea-section) { background: 
 .birthday-layout-simple { grid-template-columns: minmax(0, 1fr); }
 .featured-person {
   align-items: start;
-  background: var(--portal-section-gradient);
+  background: var(--paper);
   border: 1px solid var(--portal-border);
   border-radius: 12px;
   gap: clamp(14px, 2vw, 28px);
@@ -2578,7 +2590,8 @@ main > :is(.journey-section, .recognition-section, .idea-section) { background: 
   width: clamp(56px, 7vw, 104px);
 }
 .featured-person.has-portrait .portrait-featured { width: clamp(66px, 10vw, 148px); }
-.featured-person .portrait-featured > span { color: var(--portal-green); font-size: clamp(22px, 3vw, 40px); font-weight: 650; }
+.people-section .portrait:not([style]) { background: var(--portal-ink); color: var(--paper); }
+.featured-person .portrait-featured > span { color: var(--paper); font-size: clamp(22px, 3vw, 40px); font-weight: 650; }
 .featured-person h3 { font-size: clamp(24px, 3vw, 38px); line-height: 1.1; margin: 10px 0 6px; }
 .featured-person blockquote { font-size: clamp(16px, 1.7vw, 22px); margin: 16px 0; }
 .featured-person-copy > p { margin: 0; }
@@ -2599,7 +2612,7 @@ main > :is(.journey-section, .recognition-section, .idea-section) { background: 
   transform: translateX(8px);
 }
 .birthday-list .portrait { border-radius: 8px; overflow: hidden; }
-.birthday-list article time { background: var(--paper); border-radius: 5px; color: var(--portal-green); padding: 4px 7px; }
+.birthday-list article time { background: var(--portal-ink); border-radius: 5px; color: var(--paper); padding: 4px 7px; }
 
 @media (max-width: 820px) {
   .birthday-layout { grid-template-columns: minmax(0, 1fr); }
@@ -2608,6 +2621,7 @@ main > :is(.journey-section, .recognition-section, .idea-section) { background: 
   .featured-person.has-portrait .portrait-featured { width: 66px; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .quick-access a :is(span, .portal-icon) { transition: none; }
   .birthday-list article, .event-list .event-row { transition: none; }
   .birthday-list article:is(:hover, :focus-within), .event-list .event-row:is(:hover, :focus-within) { transform: none; }
 }
