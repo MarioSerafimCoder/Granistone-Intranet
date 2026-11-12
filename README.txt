@@ -4,14 +4,14 @@ GRANISTONE — PORTAL DO COLABORADOR
 INSTALAÇÃO
 1. Acesse Aparência > Temas > Adicionar novo.
 2. Clique em Enviar tema.
-3. Selecione granistone-intranet-v1.15.0.zip.
+3. Selecione granistone-intranet-v1.15.1.zip.
 4. Instale e ative.
 
 O tema é um tema clássico independente e contém:
 - style.css e index.php na raiz do tema.
 - Página inicial responsiva.
 - Comunicados, agenda, pessoas, cultura e história.
-- Carrossel de notícias alimentado automaticamente pelas postagens do WordPress.
+- Carrossel editorial com links para artigos do blog oficial. A seleção é mantida no arquivo inc/blog-posts.php.
 - Seção de vídeos alimentada automaticamente pelo plugin Granistone Vídeos.
 - Menu móvel, filtros, animações de entrada, efeitos de hover e mensagem de reflexão.
 - Painel Textos do Portal em Aparência > Personalizar.

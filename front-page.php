@@ -39,7 +39,7 @@ get_header();
 			<h1><?php echo esc_html( granistone_theme_text( 'hero_title_primary', 'Bem-vindo ao' ) ); ?> <span><?php echo esc_html( granistone_theme_text( 'hero_title_secondary', 'Portal Granistone' ) ); ?></span></h1>
 			<p class="hero-lead"><?php echo esc_html( granistone_theme_text( 'hero_lead', 'Informação, conexão e cultura para todos que fazem parte dessa história.' ) ); ?></p>
 			<div class="hero-actions">
-				<a class="button button-primary" href="#comunicados"><?php echo esc_html( granistone_theme_text( 'hero_primary_button', 'Últimas notícias' ) ); ?> <span aria-hidden="true">↗</span></a>
+				<a class="button button-primary" href="#noticias"><?php echo esc_html( granistone_theme_text( 'hero_primary_button', 'Últimas notícias' ) ); ?> <span aria-hidden="true">↗</span></a>
 				<a class="button button-ghost" href="#historia"><?php echo esc_html( granistone_theme_text( 'hero_secondary_button', 'Nossa história' ) ); ?></a>
 			</div>
 			<div class="hero-signature"><span>DESDE</span><strong><?php echo esc_html( granistone_theme_text( 'hero_year', '1989' ) ); ?></strong><i></i><p><?php echo esc_html( granistone_theme_text( 'hero_signature', 'Excelência em rochas ornamentais' ) ); ?></p></div>
@@ -101,7 +101,6 @@ get_header();
 					</div>
 					<button type="button" data-stone-next aria-label="<?php esc_attr_e( 'Próxima rocha', 'granistone-intranet' ); ?>">→</button>
 				</div>
-				<button class="stone-pause" type="button" data-stone-pause aria-pressed="false" hidden><?php esc_html_e( 'Pausar rotação', 'granistone-intranet' ); ?></button>
 			<?php endif; ?>
 			<div class="scroll-cue"><span></span>EXPLORE O PORTAL</div>
 		</div>
@@ -244,9 +243,9 @@ get_header();
 						<?php else : ?>
 							<div class="health-thumbnail">
 						<?php endif; ?>
-							<span class="health-thumb-fallback" aria-hidden="true"><?php granistone_icon( 'video' ); ?></span>
+							<span class="health-thumb-fallback" aria-hidden="true"></span>
 							<?php if ( $thumbnail_url ) : ?><img src="<?php echo esc_url( $thumbnail_url ); ?>" alt="" loading="lazy" decoding="async"><?php endif; ?>
-							<?php if ( $video_url ) : ?><span class="health-play" aria-hidden="true">▶</span><?php endif; ?>
+							<?php if ( $video_url ) : ?><span class="health-play" aria-hidden="true"></span><?php endif; ?>
 							<small><?php echo esc_html( $video_label ); ?></small>
 						<?php if ( $video_url ) : ?></a><?php else : ?></div><?php endif; ?>
 						<div class="health-video-copy">
@@ -279,62 +278,25 @@ get_header();
 				<button type="button" data-carousel-next aria-label="<?php esc_attr_e( 'Ver próximas notícias', 'granistone-intranet' ); ?>">→</button>
 			</div>
 		</div>
-		<?php
-		$latest_posts = new WP_Query(
-			array(
-				'post_type'           => 'post',
-				'post_status'         => 'publish',
-				'posts_per_page'      => 9,
-				'ignore_sticky_posts' => true,
-				'no_found_rows'       => true,
-				'post__not_in'        => granistone_demo_news_ids(),
-			)
-		);
-		?>
+		<?php $blog_posts = require get_theme_file_path( 'inc/blog-posts.php' ); ?>
 		<div class="news-carousel-shell" data-post-carousel>
-			<div class="news-carousel" id="granistone-news-carousel" tabindex="0" aria-label="<?php esc_attr_e( 'Postagens recentes', 'granistone-intranet' ); ?>">
-				<?php if ( $latest_posts->have_posts() ) : ?>
-					<?php while ( $latest_posts->have_posts() ) : ?>
-						<?php
-						$latest_posts->the_post();
-						$categories = array_filter(
-							get_the_category(),
-							function ( $category ) {
-								return (int) get_option( 'default_category' ) !== (int) $category->term_id;
-							}
-						);
-						$category   = reset( $categories );
-						$excerpt    = get_the_excerpt();
-						// Esta publicação tem um título institucional e texto provisório importado.
-						if ( 1110 === get_the_ID() && 'the-complete-guide-to-optimizing-your-social-content' === get_post_field( 'post_name', get_the_ID() ) && false !== stripos( $excerpt, 'lorem ipsum dolor sit amet' ) ) {
-							$excerpt = '';
-							if ( $category && 'writing' === $category->slug ) {
-								$category = false;
-							}
-						}
-						?>
-						<article class="news-card portal-card">
-							<a class="news-image news-post-image <?php echo has_post_thumbnail() ? 'has-thumbnail' : 'news-placeholder'; ?>" href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Ler: %s', 'granistone-intranet' ), get_the_title() ) ); ?>">
-								<?php if ( has_post_thumbnail() ) : ?>
-									<?php the_post_thumbnail( 'large', array( 'loading' => 'lazy', 'alt' => '' ) ); ?>
-								<?php endif; ?>
-								<div class="news-image-brand">GRANISTONE</div>
-							</a>
+			<div class="news-carousel" id="granistone-news-carousel" tabindex="0" aria-label="<?php esc_attr_e( 'Postagens recentes do blog Granistone', 'granistone-intranet' ); ?>">
+				<?php foreach ( $blog_posts as $blog_post ) : ?>
+					<article class="news-card portal-card">
+						<div class="news-image news-post-image" aria-hidden="true">
+							<img src="<?php echo esc_url( $blog_post['image'] ); ?>" alt="" width="800" height="450" loading="lazy" decoding="async">
+						</div>
+						<div class="news-copy">
 							<div class="news-meta">
-								<?php if ( $category ) : ?><span><?php echo esc_html( $category->name ); ?></span><?php endif; ?>
-								<time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo esc_html( get_the_date( 'd.m.Y' ) ); ?></time>
+								<?php if ( ! empty( $blog_post['category'] ) ) : ?><span><?php echo esc_html( $blog_post['category'] ); ?></span><?php endif; ?>
+								<time datetime="<?php echo esc_attr( $blog_post['date'] ); ?>"><?php echo esc_html( date_i18n( 'd.m.Y', strtotime( $blog_post['date'] . ' 12:00:00' ) ) ); ?></time>
 							</div>
-							<h3><?php the_title(); ?></h3>
-							<?php if ( $excerpt ) : ?><p><?php echo esc_html( wp_trim_words( $excerpt, 24, '…' ) ); ?></p><?php endif; ?>
-							<a href="<?php the_permalink(); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Continuar lendo: %s', 'granistone-intranet' ), get_the_title() ) ); ?>"><?php esc_html_e( 'Continuar lendo', 'granistone-intranet' ); ?> <?php granistone_icon( 'arrow' ); ?></a>
-						</article>
-					<?php endwhile; ?>
-				<?php else : ?>
-					<p class="news-empty"><?php esc_html_e( 'Nenhuma postagem publicada ainda.', 'granistone-intranet' ); ?></p>
-				<?php endif; ?>
+							<h3><a class="news-title-link" href="<?php echo esc_url( $blog_post['url'] ); ?>"><?php echo esc_html( $blog_post['title'] ); ?></a></h3>
+						</div>
+					</article>
+				<?php endforeach; ?>
 			</div>
 		</div>
-		<?php wp_reset_postdata(); ?>
 	</section>
 
 	<?php

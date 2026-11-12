@@ -78,11 +78,9 @@
     var dotsGroup = carousel.querySelector(".stone-dots");
     var previous = carousel.querySelector("[data-stone-prev]");
     var next = carousel.querySelector("[data-stone-next]");
-    var pause = carousel.querySelector("[data-stone-pause]");
     var current = 0;
     var randomQueue = [];
     var timer;
-    var paused = false;
     if (slides.length < 2) return;
 
     function showStone(index) {
@@ -125,7 +123,7 @@
 
     function startStoneTimer() {
       stopStoneTimer();
-      if (!reduceMotion && !paused && !carousel.matches(":hover, :focus-within")) {
+      if (!reduceMotion && !carousel.matches(":hover, :focus-within")) {
         timer = window.setInterval(function () { showStone(nextRandomStone()); }, 5000);
       }
     }
@@ -139,14 +137,6 @@
     carousel.addEventListener("mouseleave", startStoneTimer);
     carousel.addEventListener("focusin", stopStoneTimer);
     carousel.addEventListener("focusout", function () { window.requestAnimationFrame(startStoneTimer); });
-    if (pause && !reduceMotion) {
-      pause.hidden = false;
-      pause.addEventListener("click", function () {
-        paused = !paused;
-        pause.setAttribute("aria-pressed", String(paused));
-        startStoneTimer();
-      });
-    }
     carousel.addEventListener("keydown", function (event) {
       if (event.key === "ArrowLeft") showStone(current - 1);
       if (event.key === "ArrowRight") showStone(current + 1);

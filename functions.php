@@ -98,48 +98,6 @@ function granistone_icon( $name ) {
 }
 
 /**
- * Exclui da home apenas os registros de demonstração confirmados.
- * Conferir ID, slug e texto provisório preserva registros reaproveitados.
- *
- * @return int[]
- */
-function granistone_demo_news_ids() {
-	$demo_slugs = array(
-		1108 => 'why-you-need-search-engine-optimization',
-		1106 => 'how-to-get-organic-traffic-from-search-engines',
-		1104 => 'what-platforms-does-social-media-management-cover',
-		1102 => 'how-to-optimize-content-for-seo-a-quick-guide',
-		1099 => 'creating-an-effective-social-media-marketing-campaign',
-		318  => 'tincidunt-augue-interdum-wuismod-pellentesque',
-		315  => 'pulvinar-mattis-nunc-sedblandit-libero-volutpat',
-		312  => 'porttitor-egetdolor-morbi-nonarcu-risusquis',
-		310  => 'diam-volutpat-commodo-egestas-fringilla',
-		304  => 'cursus-inhac-habitasse-platea-dictumst-quisque',
-		301  => 'quis-hendrerit-dolor-magna-eget-ostilamus-lorem',
-		298  => 'donec-massa-sapien-faucibus-etmolestie',
-		295  => 'morbi-leo-urna-molestie-atelementum-eufacilisis',
-	);
-	$posts = get_posts(
-		array(
-			'post_type'      => 'post',
-			'post_status'    => 'publish',
-			'post__in'       => array_keys( $demo_slugs ),
-			'posts_per_page' => count( $demo_slugs ),
-		)
-	);
-	$excluded = array();
-
-	foreach ( $posts as $post ) {
-		$body = trim( wp_strip_all_tags( $post->post_content ) );
-		if ( $demo_slugs[ $post->ID ] === $post->post_name && preg_match( '/^(lorem ipsum dolor sit amet|sed arcu non odio euismod lacinia)/i', $body ) ) {
-			$excluded[] = $post->ID;
-		}
-	}
-
-	return $excluded;
-}
-
-/**
  * Retorna a logo escolhida no WordPress ou a logo oficial incluída no tema.
  *
  * @return string
