@@ -4,7 +4,7 @@ GRANISTONE — PORTAL DO COLABORADOR
 INSTALAÇÃO
 1. Acesse Aparência > Temas > Adicionar novo.
 2. Clique em Enviar tema.
-3. Selecione granistone-intranet-v1.15.5.zip.
+3. Selecione granistone-intranet-v1.15.6.zip.
 4. Instale e ative.
 
 O tema é um tema clássico independente e contém:
