@@ -454,7 +454,7 @@ get_header();
 				$featured_image    = get_the_post_thumbnail_url( $featured_person->ID, 'large' );
 				$featured_first    = strtok( $featured_person->post_title, ' ' );
 				?>
-				<article class="featured-person"><div class="portrait portrait-featured" <?php if ( $featured_image ) : ?>style="background-image:url('<?php echo esc_url( $featured_image ); ?>')"<?php endif; ?>><span><?php echo esc_html( $featured_initials ); ?></span></div><div><p>CONHEÇA SEU COLEGA</p><h3><?php echo esc_html( $featured_person->post_title ); ?></h3><span><?php echo esc_html( $featured_role ); ?></span><blockquote>“<?php echo esc_html( $featured_quote ); ?>”</blockquote><a href="<?php echo esc_url( $featured_link ? $featured_link : '#pessoas' ); ?>" <?php if ( $featured_link ) : ?>target="_blank" rel="noreferrer"<?php endif; ?>>Conheça a história de <?php echo esc_html( $featured_first ); ?> <?php granistone_icon( $featured_link ? 'external' : 'arrow' ); ?></a></div></article>
+				<article class="featured-person<?php echo $featured_image ? ' has-portrait' : ''; ?>"><div class="portrait portrait-featured" <?php if ( $featured_image ) : ?>style="background-image:url('<?php echo esc_url( $featured_image ); ?>')"<?php endif; ?>><span><?php echo esc_html( $featured_initials ); ?></span></div><div class="featured-person-copy"><p>CONHEÇA SEU COLEGA</p><h3><?php echo esc_html( $featured_person->post_title ); ?></h3><span><?php echo esc_html( $featured_role ); ?></span><blockquote>“<?php echo esc_html( $featured_quote ); ?>”</blockquote><a href="<?php echo esc_url( $featured_link ? $featured_link : '#pessoas' ); ?>" <?php if ( $featured_link ) : ?>target="_blank" rel="noreferrer"<?php endif; ?>>Conheça a história de <?php echo esc_html( $featured_first ); ?> <?php granistone_icon( $featured_link ? 'external' : 'arrow' ); ?></a></div></article>
 			<?php endif; ?>
 			<div class="birthday-list">
 				<h3 class="list-label"><?php echo esc_html( sprintf( __( 'Aniversariantes de %s', 'granistone-intranet' ), wp_date( 'F', $display_period->getTimestamp() ) ) ); ?></h3>
@@ -478,6 +478,11 @@ get_header();
 	<section class="history-section" id="historia">
 		<div class="history-copy"><p class="eyebrow"><?php echo esc_html( granistone_theme_text( 'history_eyebrow', 'NOSSA HISTÓRIA' ) ); ?></p><h2><?php echo esc_html( granistone_theme_text( 'history_title', 'Da origem à excelência,' ) ); ?> <span><?php echo esc_html( granistone_theme_text( 'history_highlight', 'uma história escrita em pedra.' ) ); ?></span></h2><p><?php echo esc_html( granistone_theme_text( 'history_body', 'Desde 1989, a Granistone une conhecimento, tecnologia e respeito à natureza para levar a beleza das rochas brasileiras a diferentes mercados do mundo.' ) ); ?></p><a href="#historia" class="button button-outline-light"><?php echo esc_html( granistone_theme_text( 'history_button', 'Conheça a Granistone' ) ); ?> <?php granistone_icon( 'arrow' ); ?></a></div>
 		<ol class="timeline"><li><strong>1989</strong><div><h3>Fundação</h3><p>O início de uma história movida por visão e coragem.</p></div></li><li><strong>2001</strong><div><h3>Expansão das operações</h3><p>Novas frentes e capacidade produtiva ampliada.</p></div></li><li><strong>2012</strong><div><h3>Reconhecimento internacional</h3><p>A pedra brasileira conquistando novos destinos.</p></div></li><li><strong>HOJE</strong><div><h3>Granistone hoje</h3><p>Excelência, pessoas e propósito em evolução constante.</p></div></li></ol>
+	</section>
+
+	<section class="journey-section">
+		<div class="journey-heading"><p class="eyebrow"><?php echo esc_html( granistone_theme_text( 'journey_eyebrow', 'DO BLOCO À HISTÓRIA' ) ); ?></p><h2><?php echo esc_html( granistone_theme_text( 'journey_title', 'Entenda o nosso negócio' ) ); ?></h2></div>
+		<div class="journey-steps"><article><span>01</span><i></i><h3>Origem</h3><p>A natureza revela materiais únicos.</p></article><article><span>02</span><i></i><h3>Extração</h3><p>Cuidado e precisão desde a pedreira.</p></article><article><span>03</span><i></i><h3>Beneficiamento</h3><p>Tecnologia valoriza cada detalhe.</p></article><article><span>04</span><i></i><h3>Produto final</h3><p>Beleza brasileira para o mundo.</p></article></div>
 	</section>
 
 	<section class="section values-section">
@@ -505,11 +510,6 @@ get_header();
 			<?php endif; ?>
 			<article><span><?php echo esc_html( granistone_theme_text( 'recognition_two_label', 'ATITUDE QUE INSPIRA' ) ); ?></span><h3><?php echo esc_html( granistone_theme_text( 'recognition_two_title', 'Equipe de Logística' ) ); ?></h3><p><?php echo esc_html( granistone_theme_text( 'recognition_two_text', 'Colaboração que transformou um desafio em uma entrega exemplar.' ) ); ?></p><strong><?php echo esc_html( granistone_theme_text( 'recognition_two_detail', 'Juntos, vamos mais longe.' ) ); ?></strong></article>
 		</div>
-	</section>
-
-	<section class="journey-section">
-		<div class="journey-heading"><p class="eyebrow"><?php echo esc_html( granistone_theme_text( 'journey_eyebrow', 'DO BLOCO À HISTÓRIA' ) ); ?></p><h2><?php echo esc_html( granistone_theme_text( 'journey_title', 'Entenda o nosso negócio' ) ); ?></h2></div>
-		<div class="journey-steps"><article><span>01</span><i></i><h3>Origem</h3><p>A natureza revela materiais únicos.</p></article><article><span>02</span><i></i><h3>Extração</h3><p>Cuidado e precisão desde a pedreira.</p></article><article><span>03</span><i></i><h3>Beneficiamento</h3><p>Tecnologia valoriza cada detalhe.</p></article><article><span>04</span><i></i><h3>Produto final</h3><p>Beleza brasileira para o mundo.</p></article></div>
 	</section>
 
 	<section class="section resources-section">
