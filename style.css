@@ -3,7 +3,7 @@ Theme Name: Granistone Intranet
 Theme URI: https://granistone.com.br/
 Author: Granistone
 Description: Tema institucional para a intranet Granistone, com comunicados, saúde, agenda, pessoas, cultura e serviços internos.
-Version: 1.15.6
+Version: 1.15.7
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
@@ -801,16 +801,6 @@ body {
 .featured-person a span,
 .text-link span {
   display: inline-block;
-  transition: transform .35s var(--ease-out);
-}
-
-.button:hover span,
-.announcement-card > a:hover span,
-.news-card > a:hover span,
-.health-video-copy > a:hover span,
-.featured-person a:hover span,
-.text-link:hover span {
-  transform: translate(4px, -4px);
 }
 
 .hero-copy > * {
@@ -2635,4 +2625,72 @@ main > .quick-access, main > .values-section + .recognition-section { border-blo
   .quick-access a :is(span, .portal-icon), .history-copy .button-outline-light { transition: none; }
   .birthday-list article, .event-list .event-row { transition: none; }
   .birthday-list article:is(:hover, :focus-within), .event-list .event-row:is(:hover, :focus-within) { transform: none; }
+}
+
+/* Movimento dos controles e cartões do portal. */
+:root {
+  --portal-hover-motion: transform .32s var(--ease-out);
+  --portal-control-zoom: scale(1.035);
+  --portal-card-zoom: scale(1.012);
+}
+
+:is(.button, .quick-access a, .main-nav a, .search-button, .menu-button,
+    .brand .brand-mark, .footer-bottom a, .text-link, .announcement-card > a,
+    .news-card > a, .health-video-copy > a, .featured-person a, .resource-card a,
+    .health-watch, .portal-video-close, .popup-close, .notice-details summary,
+    .health-filters button, .agenda-filters button, .news-carousel-controls button,
+    .stone-controls button, .event-row .event-action) {
+  transition: var(--portal-hover-motion), background-color .3s var(--ease-soft),
+    border-color .3s var(--ease-soft), color .3s var(--ease-soft), box-shadow .35s var(--ease-out);
+}
+
+:is(.announcement-card.portal-card, .health-video-card.portal-card, .news-card.portal-card,
+    .values-grid article, .recognition-cards article:nth-child(n), .resource-card,
+    .featured-person, .birthday-list article, .event-list .event-row, .timeline li,
+    .journey-steps article) {
+  transition: var(--portal-hover-motion), background-color .3s var(--ease-soft),
+    border-color .3s var(--ease-soft), box-shadow .35s var(--ease-out);
+}
+
+:is(.button, .quick-access a, .main-nav a, .search-button, .menu-button,
+    .footer-bottom a, .text-link, .announcement-card > a, .news-card > a,
+    .health-video-copy > a, .featured-person a, .resource-card a, .health-watch,
+    .portal-video-close, .popup-close, .notice-details summary, .health-filters button,
+    .agenda-filters button, .news-carousel-controls button, .stone-controls button,
+    .event-row .event-action):not(:disabled):focus-visible,
+.brand:focus-visible .brand-mark {
+  transform: var(--portal-control-zoom);
+}
+
+:is(.announcement-card.portal-card, .news-card.portal-card, .event-list .event-row):focus-within {
+  transform: var(--portal-card-zoom);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(.button, .quick-access a, .main-nav a, .search-button, .menu-button,
+      .footer-bottom a, .text-link, .announcement-card > a, .news-card > a,
+      .health-video-copy > a, .featured-person a, .resource-card a, .health-watch,
+      .portal-video-close, .popup-close, .notice-details summary, .health-filters button,
+      .agenda-filters button, .news-carousel-controls button, .stone-controls button,
+      .event-row .event-action):not(:disabled):hover,
+  .brand:hover .brand-mark {
+    transform: var(--portal-control-zoom);
+  }
+
+  :is(.announcement-card.portal-card, .health-video-card.portal-card, .news-card.portal-card,
+      .values-grid article, .recognition-cards article:nth-child(n), .resource-card,
+      .featured-person, .birthday-list article, .event-list .event-row, .timeline li,
+      .journey-steps article):hover {
+    transform: var(--portal-card-zoom);
+  }
+
+  .event-row:hover .event-action:not(:hover, :focus-visible) { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --portal-hover-motion: transform 0s;
+    --portal-control-zoom: none;
+    --portal-card-zoom: none;
+  }
 }
